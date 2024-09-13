@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'copyreels',
 ]
 
 MIDDLEWARE = [
@@ -145,5 +146,22 @@ LOGOUT_REDIRECT_URL = '/'
 
 SITE_ID = 1
 
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mr.ewrin@gmail.com'  # Ваш адрес электронной почты
+EMAIL_HOST_PASSWORD = 'ncnx uxsm phtv joiw'  # Пароль приложения Gmail
+DEFAULT_FROM_EMAIL = 'mr.ewrin@gmail.com'
+
+# Настройка подтверждения email
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3  # Срок действия ссылки для подтверждения (в днях)
+ACCOUNT_RATE_LIMITS = {
+    'confirm_email': '5/m',  # Не больше 5 писем подтверждения email в минуту
+}
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[CopyReels]'  # Префикс в теме письма
+
+AUTH_USER_MODEL = 'copyreels.CustomUser'
 
 
