@@ -1,45 +1,77 @@
-import React from "react";
+// LoginModal.js
+import React, { useState } from "react";
 
 const LoginModal = ({ onClose }) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    fetch("http://localhost:8000/api/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Login failed");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Обрабатываем ответ от сервера
+        if (data.token) {
+          // Сохраняем токен в localStorage или в контексте приложения
+          localStorage.setItem("token", data.token);
+          alert("Login successful!");
+          onClose(); // Закрываем модальное окно
+        } else {
+          setError("Login failed. Please check your credentials.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setError("An error occurred. Please try again.");
+      });
+  };
+
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
-        <form>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="block w-full p-2 border border-gray-300 rounded"
-              type="email"
-              id="email"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="block w-full p-2 border border-gray-300 rounded"
-              type="password"
-              id="password"
-            />
-          </div>
-          <div className="flex justify-between">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-              type="submit"
-            >
-              Login
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-          </div>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <span className="close-button" onClick={onClose}>
+          &times;
+        </span>
+        <h2>Login</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+          {error && <p className="error-message">{error}</p>}
+          <button type="submit">Login</button>
         </form>
       </div>
     </div>
