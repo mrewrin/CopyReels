@@ -11,6 +11,8 @@ import ContentSection from "./components/ContentSection";
 import Footer from "./components/Footer";
 import About from "./components/AboutPage";
 import ContentTools from "./components/ContentTools";
+import RegisterModal from "./components/RegisterModal"; // Импортируем RegisterModal
+import LoginModal from "./components/LoginModal";
 
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -31,10 +33,8 @@ const App = () => {
           element={
             <div className="container mx-auto">
               <Main
-                isLoginModalOpen={isLoginModalOpen}
-                isRegisterModalOpen={isRegisterModalOpen}
-                closeLoginModal={closeLoginModal}
-                closeRegisterModal={closeRegisterModal}
+                openLoginModal={openLoginModal} // Передаем функции в Main
+                openRegisterModal={openRegisterModal}
               />
               <SliderPartners />
               <ContentSection />
@@ -43,6 +43,14 @@ const App = () => {
               <ContactUs />
               <Blog />
               <Footer />
+
+              {/* Добавляем модальные окна */}
+              {isLoginModalOpen && (
+                <LoginModal closeLoginModal={closeLoginModal} />
+              )}
+              {isRegisterModalOpen && (
+                <RegisterModal closeRegisterModal={closeRegisterModal} />
+              )}
             </div>
           }
         />
