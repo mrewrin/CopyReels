@@ -1,62 +1,81 @@
-import React from "react";
+// RegisterModal.js
+import React, { useState } from "react";
 
-const RegisterModal = ({ onClose }) => {
+function RegisterModal() {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  // Устанавливаем isOpen в true, чтобы модальное окно открывалось сразу
+  const [isOpen, setIsOpen] = useState(true);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    fetch("http://localhost:8000/api/register/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message) {
+          alert("Registration successful!");
+        } else {
+          alert("Registration failed!");
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
-        <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-        <form>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="block w-full p-2 border border-gray-300 rounded"
-              type="email"
-              id="email"
-            />
+    <>
+      {isOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <span className="close-button" onClick={() => setIsOpen(false)}>
+              &times;
+            </span>
+            <form onSubmit={handleSubmit}>
+              <h2>Register</h2>
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <button type="submit">Register</button>
+            </form>
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="block w-full p-2 border border-gray-300 rounded"
-              type="password"
-              id="password"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-600 mb-2"
-              htmlFor="confirmPassword"
-            >
-              Confirm Password
-            </label>
-            <input
-              className="block w-full p-2 border border-gray-300 rounded"
-              type="password"
-              id="confirmPassword"
-            />
-          </div>
-          <div className="flex justify-between">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-              type="submit"
-            >
-              Register
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
-};
+}
 
 export default RegisterModal;
