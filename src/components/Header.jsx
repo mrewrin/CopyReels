@@ -12,9 +12,7 @@ const Header = ({ openLoginModal, openRegisterModal }) => {
           <Link to="/about" className="text-gray-600 hover:text-gray-900">
             PageAbout
           </Link>
-          <Link to="/" className="text-gray-600 hover:text-gray-900">
-            Текст
-          </Link>
+          <a className="text-gray-600 hover:text-gray-900">Текст</a>
           <a href="#" className="text-gray-600 hover:text-gray-900">
             Текст
           </a>
