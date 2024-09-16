@@ -16,7 +16,7 @@ import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
 import ProtectedRoute from "./components/ProtectedRoute";
 import EmailConfirmation from "./components/EmailConfirmation";
-import HistorySection from "./components/HistorySection"; // Импортируем новый компонент
+import HistorySection from "./components/HistorySection";
 
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -50,7 +50,6 @@ const App = () => {
               <ContactUs />
               <Blog />
               <Footer />
-              {/* Добавляем модальные окна */}
               {isLoginModalOpen && <LoginModal onClose={closeLoginModal} />}
               {isRegisterModalOpen && (
                 <RegisterModal onClose={closeRegisterModal} />
@@ -67,12 +66,13 @@ const App = () => {
         <Route
           path="/about"
           element={
-            <Box width="100%">
-              <About />
-            </Box>
+            <ProtectedRoute>
+              <Box width="100%">
+                <About />
+              </Box>
+            </ProtectedRoute>
           }
         />
-        {/* Маршрут для подтверждения электронной почты */}
         <Route
           path="/accounts/confirm-email/:token"
           element={
