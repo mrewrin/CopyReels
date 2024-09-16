@@ -65,6 +65,7 @@ function RegisterModal({ onClose }) {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        confirmPassword: formData.confirmPassword, // Добавляем повторный пароль
       }),
     })
       .then((response) => response.json())
