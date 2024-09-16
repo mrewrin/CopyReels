@@ -13,6 +13,7 @@ import About from "./components/AboutPage";
 import ContentTools from "./components/ContentTools";
 import RegisterModal from "./components/RegisterModal"; // Импортируем RegisterModal
 import LoginModal from "./components/LoginModal";
+import ProtectedRoute from "./components/ProtectedRoute"; // Импортируем ProtectedRoute
 
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -43,24 +44,23 @@ const App = () => {
               <ContactUs />
               <Blog />
               <Footer />
-
               {/* Добавляем модальные окна */}
-              {isLoginModalOpen && (
-                <LoginModal closeLoginModal={closeLoginModal} />
-              )}
+              {isLoginModalOpen && <LoginModal onClose={closeLoginModal} />}
               {isRegisterModalOpen && (
-                <RegisterModal closeRegisterModal={closeRegisterModal} />
+                <RegisterModal onClose={closeRegisterModal} />
               )}
             </div>
           }
         />
-        {/* About страница на полную ширину */}
+        {/* Защищенная About страница */}
         <Route
           path="/about"
           element={
-            <div className="w-full">
-              <About />
-            </div>
+            <ProtectedRoute>
+              <div className="w-full">
+                <About />
+              </div>
+            </ProtectedRoute>
           }
         />
       </Routes>

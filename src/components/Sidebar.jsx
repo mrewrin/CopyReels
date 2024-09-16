@@ -1,6 +1,19 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Импортируем useNavigate
 
 const Sidebar = () => {
+  const navigate = useNavigate(); // Инициализируем useNavigate
+
+  const handleLogout = () => {
+    // Удаляем токен из localStorage
+    localStorage.removeItem("token");
+
+    // Дополнительная логика сброса состояния, если необходимо (например, очистка данных пользователя)
+
+    // Перенаправляем пользователя на главную страницу или страницу логина
+    navigate("/");
+  };
+
   return (
     <aside className="w-1/4 bg-gray-100 p-6">
       <div className="flex items-center mb-8">
@@ -35,7 +48,10 @@ const Sidebar = () => {
           <i className="fab fa-telegram text-blue-500"></i>
           <i className="fas fa-envelope text-red-500"></i>
         </div>
-        <button className="w-full py-2 bg-gray-200 text-gray-700 rounded">
+        <button
+          className="w-full py-2 bg-gray-200 text-gray-700 rounded"
+          onClick={handleLogout} // Добавляем обработчик события
+        >
           Выйти
         </button>
       </div>

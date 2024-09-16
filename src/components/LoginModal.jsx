@@ -1,5 +1,5 @@
-// LoginModal.js
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Импортируем useNavigate
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +7,8 @@ const LoginModal = ({ onClose }) => {
     password: "",
   });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate(); // Инициализируем useNavigate
 
   const handleChange = (e) => {
     setFormData({
@@ -17,6 +19,7 @@ const LoginModal = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     fetch("http://127.0.0.1:8000/api/login/", {
       method: "POST",
@@ -32,12 +35,11 @@ const LoginModal = ({ onClose }) => {
         return response.json();
       })
       .then((data) => {
-        // Обрабатываем ответ от сервера
         if (data.token) {
-          // Сохраняем токен в localStorage или в контексте приложения
           localStorage.setItem("token", data.token);
           alert("Login successful!");
           onClose(); // Закрываем модальное окно
+          navigate("/about"); // Перенаправляем на страницу About
         } else {
           setError("Login failed. Please check your credentials.");
         }
@@ -45,6 +47,9 @@ const LoginModal = ({ onClose }) => {
       .catch((error) => {
         console.error("Error:", error);
         setError("An error occurred. Please try again.");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -71,7 +76,9 @@ const LoginModal = ({ onClose }) => {
             onChange={handleChange}
           />
           {error && <p className="error-message">{error}</p>}
-          <button type="submit">Login</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
         </form>
       </div>
     </div>
