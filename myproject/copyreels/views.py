@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, get_user_model
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.tokens import default_token_generator
@@ -12,6 +13,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from allauth.account.utils import send_email_confirmation
 from allauth.account.views import ConfirmEmailView
+from allauth.account.models import EmailConfirmation
 from django.shortcuts import redirect
 
 
@@ -32,16 +34,15 @@ class RegisterView(APIView):
 
 
 class CustomEmailConfirmationView(ConfirmEmailView):
-    def get(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         # Выполнение стандартного подтверждения
-        response = super().get(*args, **kwargs)
-
-        # Если подтверждение успешно, перенаправление на кастомную страницу
+        self.object = self.get_object()
         if self.object:
-            return redirect('/')  # Перенаправление на главную страницу
+            self.object.confirm(self.request)
+            return JsonResponse({'status': 'success', 'message': 'Email confirmed successfully'})
 
         # В случае ошибки или недействительной ссылки показать ошибку
-        return response
+        return JsonResponse({'status': 'error', 'message': 'Invalid confirmation link'}, status=400)
 
 
 class LoginView(APIView):

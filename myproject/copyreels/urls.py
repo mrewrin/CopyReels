@@ -34,9 +34,10 @@ urlpatterns = [
                   path('account/', views.account_view, name='account'),
 
                   # URL для allauth
-                  path('accounts/', include('allauth.urls')),
                   path('accounts/confirm-email/<str:key>/', CustomEmailConfirmationView.as_view(),
                        name='account_confirm_email'),
+                  path('accounts/', include('allauth.urls')),
+
                   # Password reset
                   path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
                   path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),

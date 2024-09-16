@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#ah$*4-(_mn$$_*h-47rrhr$e7ejl3%qgbe_qo7&p85)7pmf_v'
 
 # Режим отладки (выключать в продакшене)
-DEBUG = False
+DEBUG = True
 
 # Разрешённые хосты (заполнять в продакшене)
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -71,7 +71,7 @@ ROOT_URLCONF = 'copyreels.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'copyreels' / 'templates'],  # Путь к шаблонам проекта
+        'DIRS': [BASE_DIR / 'copyreels' / "static"],  # Путь к шаблонам проекта
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -210,7 +210,9 @@ REST_FRAMEWORK = {
 }
 
 STATICFILES_DIRS = [
-    BASE_DIR / "copyreels/static",
+    BASE_DIR / "copyreels/static/src",  # Проверьте путь к этой папке
+    BASE_DIR / "copyreels/static/static",
 ]
 
-STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка, куда `collectstatic` соберет все файлы
+
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка, куда collectstatic соберет все файлы
