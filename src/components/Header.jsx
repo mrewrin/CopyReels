@@ -1,73 +1,99 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const Header = ({ openLoginModal, openRegisterModal }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setIsDrawerOpen(open);
+  };
 
   return (
-    <header className="bg-white shadow-md py-4 mb-5">
-      <div className="container mx-auto flex justify-between items-center px-4 md:px-8">
-        <div className="text-2xl font-bold text-gray-900">Copy Reels</div>
-        <nav className="hidden md:flex space-x-6">
-          <Link to="/about" className="text-gray-600 hover:text-gray-900">
-            PageAbout
-          </Link>
-          <a className="text-gray-600 hover:text-gray-900">Текст</a>
-          <a href="#" className="text-gray-600 hover:text-gray-900">
-            Текст
-          </a>
-          <a href="#" className="text-gray-600 hover:text-gray-900">
-            Текст
-          </a>
-        </nav>
-        <div className="hidden md:flex space-x-4">
-          {/* Используем функции для открытия модалок */}
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
-            onClick={openLoginModal} // Открываем модалку логина
-          >
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{ backgroundColor: "#fff", color: "#000" }}
+    >
+      <Toolbar>
+        <Typography
+          variant="h6"
+          component={Link}
+          to="/"
+          sx={{ flexGrow: 1, textDecoration: "none", color: "inherit" }}
+        >
+          CopyReels
+        </Typography>
+        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+          <Button component={Link} to="/about" color="inherit">
+            About
+          </Button>
+          <Button color="primary" variant="outlined" onClick={openLoginModal}>
             Login
-          </button>
-          <button
-            className="bg-gray-200 hover:bg-gray-300 text-gray-900 px-6 py-2 rounded-full"
-            onClick={openRegisterModal} // Открываем модалку регистрации
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={openRegisterModal}
           >
             Register
-          </button>
-        </div>
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
-            <i className="fas fa-bars text-2xl text-gray-900"></i>
-          </button>
-        </div>
-      </div>
-      {isOpen && (
-        <nav className="md:hidden bg-white border-t border-gray-200">
-          <ul className="flex flex-col space-y-4 px-4 py-4">
-            <li>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
-                Solutions
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
-                Pricing
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
-                Get Paid
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
-                Contact
-              </a>
-            </li>
-          </ul>
-        </nav>
-      )}
-    </header>
+          </Button>
+        </Box>
+        <Box sx={{ display: { xs: "flex", md: "none" } }}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Box>
+      </Toolbar>
+      {/* Drawer для мобильного меню */}
+      <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
+          <List>
+            <ListItem button component={Link} to="/about">
+              <ListItemText primary="About" />
+            </ListItem>
+            <Divider />
+            <ListItem button onClick={openLoginModal}>
+              <ListItemText primary="Login" />
+            </ListItem>
+            <ListItem button onClick={openRegisterModal}>
+              <ListItemText primary="Register" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+    </AppBar>
   );
 };
 

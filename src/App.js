@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Container, Box } from "@mui/material";
 import "./App.css";
 import "./output.css";
 import Main from "./components/Main";
@@ -11,13 +12,15 @@ import ContentSection from "./components/ContentSection";
 import Footer from "./components/Footer";
 import About from "./components/AboutPage";
 import ContentTools from "./components/ContentTools";
-import RegisterModal from "./components/RegisterModal"; // Импортируем RegisterModal
+import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
-import ProtectedRoute from "./components/ProtectedRoute"; // Импортируем ProtectedRoute
+import ProtectedRoute from "./components/ProtectedRoute";
+import EmailConfirmation from "./components/EmailConfirmation"; // Импортируем новый компонент
 
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isEmailConfirmOpen, setIsEmailConfirmOpen] = useState(false);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
@@ -25,16 +28,18 @@ const App = () => {
   const openRegisterModal = () => setIsRegisterModalOpen(true);
   const closeRegisterModal = () => setIsRegisterModalOpen(false);
 
+  const openEmailConfirm = () => setIsEmailConfirmOpen(true);
+  const closeEmailConfirm = () => setIsEmailConfirmOpen(false);
+
   return (
     <Router>
       <Routes>
-        {/* Главная страница с ограниченной шириной */}
         <Route
           path="/"
           element={
-            <div className="container mx-auto">
+            <Container maxWidth="xl">
               <Main
-                openLoginModal={openLoginModal} // Передаем функции в Main
+                openLoginModal={openLoginModal}
                 openRegisterModal={openRegisterModal}
               />
               <SliderPartners />
@@ -49,18 +54,30 @@ const App = () => {
               {isRegisterModalOpen && (
                 <RegisterModal onClose={closeRegisterModal} />
               )}
-            </div>
+              {isEmailConfirmOpen && (
+                <EmailConfirmation
+                  open={isEmailConfirmOpen}
+                  onClose={closeEmailConfirm}
+                />
+              )}
+            </Container>
           }
         />
-        {/* Защищенная About страница */}
         <Route
           path="/about"
           element={
             <ProtectedRoute>
-              <div className="w-full">
+              <Box width="100%">
                 <About />
-              </div>
+              </Box>
             </ProtectedRoute>
+          }
+        />
+        {/* Маршрут для подтверждения электронной почты */}
+        <Route
+          path="/accounts/confirm-email/:token"
+          element={
+            <EmailConfirmation open={true} onClose={closeEmailConfirm} />
           }
         />
       </Routes>
