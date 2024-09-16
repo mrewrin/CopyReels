@@ -1,0 +1,158 @@
+[33mcommit 62fd96c39dcbabe60606cf82188c72e227276396[m[33m ([m[1;36mHEAD -> [m[1;32mfeature_01[m[33m)[m
+Author: Stanislav Skripchenko <mr.ewrin@gmail.com>
+Date:   Mon Sep 16 15:00:32 2024 +0500
+
+    Update auth reg
+
+[33mcommit 668ce3e478027867106e5ac2bf1c80b826dbbcea[m[33m ([m[1;31morigin/main[m[33m)[m
+Merge: cdfd610 e81959d
+Author: Sergey <90494834+makarenkoooooo@users.noreply.github.com>
+Date:   Mon Sep 16 14:49:18 2024 +0500
+
+    Merge pull request #9 from mrewrin/react-app-branch
+    
+    add new file
+
+[33mcommit e81959d7dcd06843dbd58b35bef29ed6473724af[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Mon Sep 16 14:48:44 2024 +0500
+
+    add new file
+
+[33mcommit cdfd610618bd9d475c41e1a5a4d88a977e3f27c8[m
+Merge: cb3b197 d46d036
+Author: Sergey <90494834+makarenkoooooo@users.noreply.github.com>
+Date:   Mon Sep 16 12:01:03 2024 +0500
+
+    Merge pull request #8 from mrewrin/react-app-branch
+    
+    React app branch
+
+[33mcommit d46d036d62f24f39871ab2c169146307b6acaa69[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Mon Sep 16 11:59:44 2024 +0500
+
+    login aut
+
+[33mcommit 38dbbe408efac55e37a1be86c1a6868e5b61c83c[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Sat Sep 14 22:03:29 2024 +0500
+
+    добавил авторизацию ключ в локал сторедж и при логине переходил на оосвноную страницу приложения
+
+[33mcommit cb3b1979758d3ebb347f5e10873e80ffc98627d5[m
+Merge: de620e3 66ac4a8
+Author: Sergey <90494834+makarenkoooooo@users.noreply.github.com>
+Date:   Sat Sep 14 19:45:06 2024 +0500
+
+    Merge pull request #7 from mrewrin/react-app-branch
+    
+    add new build
+
+[33mcommit 66ac4a88dfc624ebc7fb35d8387bc70492490f81[m[33m ([m[1;31morigin/react-app-branch[m[33m)[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Sat Sep 14 19:43:07 2024 +0500
+
+    add new build
+
+[33mcommit de620e347db13469586b345b345eaf4504f1f65e[m
+Merge: 3179376 3fb864d
+Author: Sergey <90494834+makarenkoooooo@users.noreply.github.com>
+Date:   Sat Sep 14 19:39:28 2024 +0500
+
+    Merge pull request #6 from mrewrin/react-app-branch
+    
+    add file
+
+[33mcommit 3fb864ddcd2c564de722b2374b7d76e768e8a3c0[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Sat Sep 14 19:38:35 2024 +0500
+
+    add file
+
+[33mcommit 3179376e765104b28b18dd1001f35b6d79201613[m
+Merge: 74f3271 9da3090
+Author: Sergey <90494834+makarenkoooooo@users.noreply.github.com>
+Date:   Sat Sep 14 19:25:00 2024 +0500
+
+    Merge pull request #5 from mrewrin/react-app-branch
+    
+    add file Register and login
+
+[33mcommit 9da30902e6680b198f591b2204e47d1eafb7dac0[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Sat Sep 14 19:24:09 2024 +0500
+
+    add file Register and login
+
+[33mcommit 74f32716c551532b5a7f6b0d816aadcdcf5f2a88[m
+Merge: 6b05167 6f3276d
+Author: Sergey <90494834+makarenkoooooo@users.noreply.github.com>
+Date:   Sat Sep 14 18:17:22 2024 +0500
+
+    Merge pull request #4 from mrewrin/react-app-branch
+    
+    add folder static add build project
+
+[33mcommit 6f3276d5d85da774ee6c603ce898ad716ec1e0a8[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Sat Sep 14 18:15:09 2024 +0500
+
+    add folder static add build project
+
+[33mcommit 6b0516769bcaaccaee3c54fb6f23d406af3a9a8a[m
+Merge: f68f85f 11a6813
+Author: Sergey <90494834+makarenkoooooo@users.noreply.github.com>
+Date:   Sat Sep 14 17:45:19 2024 +0500
+
+    Merge pull request #3 from mrewrin/react-app-branch
+    
+    init: add file project
+
+[33mcommit 11a6813250cf96ecc2f373795bdfb86ba325225a[m
+Author: makarenkoooooo <dodiverinwork@gmail.com>
+Date:   Sat Sep 14 17:41:40 2024 +0500
+
+    init: add file project
+
+[33mcommit f68f85fcf5ce041d75c3acd08269c263b4effb38[m
+Merge: c71a038 22fd634
+Author: Stanislav Skripchenko <36085963+mrewrin@users.noreply.github.com>
+Date:   Fri Sep 13 17:11:18 2024 +0500
+
+    Merge pull request #2 from mrewrin/feature_01
+    
+    Feature 01
+
+[33mcommit 22fd6345bda34d22d54fef49fd0ecf3751662d7f[m[33m ([m[1;31morigin/feature_01[m[33m)[m
+Author: Stanislav Skripchenko <mr.ewrin@gmail.com>
+Date:   Fri Sep 13 17:07:32 2024 +0500
+
+    Добавлены изменения для функции сброса/изменения пароля. Создана модель пользователя
+
+[33mcommit c71a03882a51580efcdc13cc09384e40d400889c[m
+Merge: e882308 9589c00
+Author: Stanislav Skripchenko <36085963+mrewrin@users.noreply.github.com>
+Date:   Fri Sep 13 01:05:00 2024 +0500
+
+    Merge pull request #1 from mrewrin/feature/auth_reg
+    
+    [Backend] Реализация системы регистрации, аутентификации и сброса пароля.
+
+[33mcommit 9589c00a0e41ae774017fe60d1f0876eb2864faa[m[33m ([m[1;31morigin/feature/auth_reg[m[33m, [m[1;32mmain[m[33m, [m[1;32mfeature/auth_reg[m[33m)[m
+Author: Stanislav Skripchenko <mr.ewrin@gmail.com>
+Date:   Fri Sep 13 00:58:18 2024 +0500
+
+    Развернуто окружение, установлены зависимости. Развернут Django проект с allauth. Добавлены базовые формы регистрации и авторизации. Добавлена админ панель.
+
+[33mcommit e882308c1d6768caf3d70d1ad981dc566562c21b[m
+Author: Stanislav Skripchenko <mr.ewrin@gmail.com>
+Date:   Thu Sep 12 22:46:09 2024 +0500
+
+    Initial commit
+
+[33mcommit 0c40b6a6f26c59cc1e5b8cdcc77423b3ea19b029[m
+Author: Stanislav Skripchenko <36085963+mrewrin@users.noreply.github.com>
+Date:   Thu Sep 12 22:46:44 2024 +0500
+
+    Initial commit

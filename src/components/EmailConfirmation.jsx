@@ -1,13 +1,32 @@
-// EmailConfirmation.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, Button, Modal } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EmailConfirmation = ({ open, onClose }) => {
   const navigate = useNavigate();
+  const { key } = useParams(); // Получаем ключ из URL
+
+  useEffect(() => {
+    // Отправляем запрос на сервер для подтверждения email при загрузке компонента
+    fetch(`http://127.0.0.1:8000/accounts/confirm-email/${key}/`, {
+      method: "GET",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Confirmation failed");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Здесь можно обработать успешное подтверждение, например, показать уведомление
+        console.log("Email confirmed successfully", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [key]);
 
   const handleConfirm = () => {
-    // Закрываем модальное окно и перенаправляем на главную
     onClose();
     navigate("/");
   };
