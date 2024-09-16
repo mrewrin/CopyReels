@@ -1,5 +1,6 @@
 import React from "react";
 import FAQItem from "./FaqItem";
+import { Container, Typography, Box } from "@mui/material";
 
 const Faq = () => {
   const faqs = [
@@ -16,12 +17,16 @@ const Faq = () => {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-8 text-center">FAQ</h2>
+    <Container maxWidth="md" sx={{ py: 6 }}>
+      <Typography variant="h4" component="h2" align="center" gutterBottom>
+        FAQ
+      </Typography>
       {faqs.map((faq, index) => (
-        <FAQItem key={index} question={faq.question} answer={faq.answer} />
+        <Box key={index} mb={2}>
+          <FAQItem question={faq.question} answer={faq.answer} />
+        </Box>
       ))}
-    </div>
+    </Container>
   );
 };
 

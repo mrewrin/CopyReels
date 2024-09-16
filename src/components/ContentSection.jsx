@@ -1,4 +1,15 @@
 import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Typography,
+  Tabs,
+  Tab,
+  Card,
+  CardMedia,
+  CardContent,
+  Grid,
+} from "@mui/material";
 import Image2 from "../images/image-2.png";
 import MainImage from "../images/mainimage.png";
 
@@ -9,69 +20,109 @@ const ContentSection = () => {
     switch (activeTab) {
       case "Gmail AI":
         return (
-          <div className="flex justify-between items-center p-6 bg-white rounded-lg shadow-lg">
-            <div className="w-1/2">
-              <img
-                src={Image2}
-                alt="Gmail interface"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-            <div className="w-1/2 pl-6">
-              <h2 className="text-3xl font-bold">Gmail AI Integration</h2>
-              <p className="mt-4 text-gray-600">
-                Improve your emails with AI suggestions right inside your Gmail
-                account.
-              </p>
-              <button className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700">
-                Learn more
-              </button>
-            </div>
-          </div>
+          <Card sx={{ display: "flex", p: 2, boxShadow: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <CardMedia
+                  component="img"
+                  image={Image2}
+                  alt="Gmail interface"
+                  sx={{ borderRadius: 2 }}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+              >
+                <CardContent>
+                  <Typography variant="h5" gutterBottom>
+                    Gmail AI Integration
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary" paragraph>
+                    Improve your emails with AI suggestions right inside your
+                    Gmail account.
+                  </Typography>
+                  <Button variant="contained" color="primary">
+                    Learn more
+                  </Button>
+                </CardContent>
+              </Grid>
+            </Grid>
+          </Card>
         );
       case "Video-to-text":
         return (
-          <div className="flex justify-between items-center p-6 bg-white rounded-lg shadow-lg">
-            <div className="w-1/2">
-              <img
-                src={MainImage}
-                alt="Video to text"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-            <div className="w-1/2 pl-6">
-              <h2 className="text-3xl font-bold">
-                Video-to-text Transcription
-              </h2>
-              <p className="mt-4 text-gray-600">
-                Easily transcribe videos into text with our AI-powered tool.
-              </p>
-              <button className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700">
-                Learn more
-              </button>
-            </div>
-          </div>
+          <Card sx={{ display: "flex", p: 2, boxShadow: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <CardMedia
+                  component="img"
+                  image={MainImage}
+                  alt="Video to text"
+                  sx={{ borderRadius: 2 }}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+              >
+                <CardContent>
+                  <Typography variant="h5" gutterBottom>
+                    Video-to-text Transcription
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary" paragraph>
+                    Easily transcribe videos into text with our AI-powered tool.
+                  </Typography>
+                  <Button variant="contained" color="primary">
+                    Learn more
+                  </Button>
+                </CardContent>
+              </Grid>
+            </Grid>
+          </Card>
         );
       case "AI Paraphraser":
         return (
-          <div className="flex justify-between items-center p-6 bg-white rounded-lg shadow-lg">
-            <div className="w-1/2">
-              <img
-                src={Image2}
-                alt="AI Paraphraser"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-            <div className="w-1/2 pl-6">
-              <h2 className="text-3xl font-bold">AI Paraphraser Tool</h2>
-              <p className="mt-4 text-gray-600">
-                Paraphrase your text easily with the power of AI.
-              </p>
-              <button className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700">
-                Learn more
-              </button>
-            </div>
-          </div>
+          <Card sx={{ display: "flex", p: 2, boxShadow: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <CardMedia
+                  component="img"
+                  image={Image2}
+                  alt="AI Paraphraser"
+                  sx={{ borderRadius: 2 }}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+              >
+                <CardContent>
+                  <Typography variant="h5" gutterBottom>
+                    AI Paraphraser Tool
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary" paragraph>
+                    Paraphrase your text easily with the power of AI.
+                  </Typography>
+                  <Button variant="contained" color="primary">
+                    Learn more
+                  </Button>
+                </CardContent>
+              </Grid>
+            </Grid>
+          </Card>
         );
       default:
         return null;
@@ -79,41 +130,19 @@ const ContentSection = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-8">
-      <div className="flex justify-center space-x-4 mb-6">
-        <button
-          onClick={() => setActiveTab("Gmail AI")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "Gmail AI"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-600"
-          }`}
-        >
-          Gmail AI
-        </button>
-        <button
-          onClick={() => setActiveTab("Video-to-text")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "Video-to-text"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-600"
-          }`}
-        >
-          Video-to-text
-        </button>
-        <button
-          onClick={() => setActiveTab("AI Paraphraser")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "AI Paraphraser"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-600"
-          }`}
-        >
-          AI Paraphraser
-        </button>
-      </div>
-      <div>{renderContent()}</div>
-    </div>
+    <Box maxWidth="lg" mx="auto" py={6}>
+      <Tabs
+        value={activeTab}
+        onChange={(event, newValue) => setActiveTab(newValue)}
+        centered
+        sx={{ mb: 4 }}
+      >
+        <Tab label="Gmail AI" value="Gmail AI" />
+        <Tab label="Video-to-text" value="Video-to-text" />
+        <Tab label="AI Paraphraser" value="AI Paraphraser" />
+      </Tabs>
+      <Box>{renderContent()}</Box>
+    </Box>
   );
 };
 

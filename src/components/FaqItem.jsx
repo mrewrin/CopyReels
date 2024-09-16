@@ -27,29 +27,30 @@
 // export default FaqItem;
 
 import React, { useState } from "react";
+import { Box, Typography, Collapse, IconButton } from "@mui/material";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 
 const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-gray-200 py-4">
-      <div
-        className="flex justify-between items-center cursor-pointer"
+    <Box borderBottom={1} borderColor="grey.200" py={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
         onClick={() => setIsOpen(!isOpen)}
+        sx={{ cursor: "pointer" }}
       >
-        <div className="flex items-center">
-          <span className="text-lg text-gray-500 mr-2">
-            {isOpen ? "-" : "+"}
-          </span>
-          <h2 className="text-lg font-medium text-gray-900">{question}</h2>
-        </div>
-      </div>
-      {isOpen && (
-        <div className="mt-4">
-          <p className="text-gray-600">{answer}</p>
-        </div>
-      )}
-    </div>
+        <Typography variant="h6">{question}</Typography>
+        <IconButton>{isOpen ? <ExpandLess /> : <ExpandMore />}</IconButton>
+      </Box>
+      <Collapse in={isOpen}>
+        <Typography variant="body2" color="textSecondary" mt={2}>
+          {answer}
+        </Typography>
+      </Collapse>
+    </Box>
   );
 };
 

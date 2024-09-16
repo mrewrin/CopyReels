@@ -15,7 +15,8 @@ import ContentTools from "./components/ContentTools";
 import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
 import ProtectedRoute from "./components/ProtectedRoute";
-import EmailConfirmation from "./components/EmailConfirmation"; // Импортируем новый компонент
+import EmailConfirmation from "./components/EmailConfirmation";
+import HistorySection from "./components/HistorySection"; // Импортируем новый компонент
 
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -66,11 +67,9 @@ const App = () => {
         <Route
           path="/about"
           element={
-            <ProtectedRoute>
-              <Box width="100%">
-                <About />
-              </Box>
-            </ProtectedRoute>
+            <Box width="100%">
+              <About />
+            </Box>
           }
         />
         {/* Маршрут для подтверждения электронной почты */}

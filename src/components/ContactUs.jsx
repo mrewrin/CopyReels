@@ -1,20 +1,50 @@
 import React from "react";
+import { Box, Typography, Button } from "@mui/material";
 
 const ContactUs = () => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-5 flex items-center justify-between mt-10 max-w-lg mx-auto">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">
+    <Box
+      sx={{
+        backgroundColor: "white",
+        borderRadius: 2,
+        boxShadow: 3,
+        p: 4,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        mt: 5,
+        maxWidth: "900px",
+        mx: "auto",
+      }}
+    >
+      <Box>
+        <Typography variant="h5" component="h2" gutterBottom>
           Still have questions?
-        </h2>
-        <p className="text-gray-600 mt-2 text-base">
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil, sequi?
-        </p>
-      </div>
-      <button className="bg-black text-white px-5 py-3 rounded-full hover:bg-gray-800 transition duration-300 text-base">
+        </Typography>
+      </Box>
+      <Button
+        variant="contained"
+        sx={{
+          background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+          color: "white",
+          px: 4,
+          py: 1.5,
+          borderRadius: "50px",
+          textTransform: "none",
+          boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
+          transition: "transform 0.3s ease, box-shadow 0.3s ease",
+          ":hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0 6px 10px 4px rgba(255, 105, 135, .3)",
+          },
+        }}
+      >
         Contact Us
-      </button>
-    </div>
+      </Button>
+    </Box>
   );
 };
 
