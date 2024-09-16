@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import {
+  Modal,
+  Box,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -8,7 +17,7 @@ const LoginModal = ({ onClose }) => {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate(); // Инициализируем useNavigate
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -37,16 +46,15 @@ const LoginModal = ({ onClose }) => {
       .then((data) => {
         if (data.token) {
           localStorage.setItem("token", data.token);
-          alert("Login successful!");
           onClose(); // Закрываем модальное окно
           navigate("/about"); // Перенаправляем на страницу About
         } else {
-          setError("Login failed. Please check your credentials.");
+          setError("Ошибка входа. Проверьте свои учетные данные.");
         }
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError("An error occurred. Please try again.");
+        setError("Произошла ошибка. Попробуйте еще раз.");
       })
       .finally(() => {
         setIsLoading(false);
@@ -54,34 +62,62 @@ const LoginModal = ({ onClose }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <span className="close-button" onClick={onClose}>
-          &times;
-        </span>
-        <h2>Login</h2>
+    <Modal open={true} onClose={onClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 400,
+          bgcolor: "background.paper",
+          borderRadius: 1,
+          boxShadow: 24,
+          p: 4,
+        }}
+      >
+        <Typography variant="h6" component="h2" gutterBottom>
+          Вход
+        </Typography>
         <form onSubmit={handleSubmit}>
-          <input
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Email"
             type="email"
             name="email"
-            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
+            required
           />
-          <input
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Пароль"
             type="password"
             name="password"
-            placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            required
           />
-          {error && <p className="error-message">{error}</p>}
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
-          </button>
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={isLoading}
+            sx={{ mt: 2 }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "Войти"}
+          </Button>
         </form>
-      </div>
-    </div>
+      </Box>
+    </Modal>
   );
 };
 

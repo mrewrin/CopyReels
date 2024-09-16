@@ -5,7 +5,7 @@ import MainContent from "./MainContent";
 const About = () => {
   return (
     <div className="h-screen">
-      <div className="flex h-full">
+      <div className="h-full">
         <Sidebar />
         <MainContent />
       </div>
