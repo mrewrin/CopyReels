@@ -39,7 +39,12 @@ class CustomEmailConfirmationView(ConfirmEmailView):
         self.object = self.get_object()
         if self.object:
             self.object.confirm(self.request)
-            return JsonResponse({'status': 'success', 'message': 'Email confirmed successfully'})
+            self.object.email_address.user.is_active = True
+            self.object.email_address.user.save()
+            return redirect('http://127.0.0.1:8000/')
+
+            # Если хотите перенаправить пользователя на React страницу
+            # return redirect('/email-confirmed')
 
         # В случае ошибки или недействительной ссылки показать ошибку
         return JsonResponse({'status': 'error', 'message': 'Invalid confirmation link'}, status=400)
@@ -49,7 +54,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        User = get_user_model()  # Получаем модель пользователя здесь
+        User = get_user_model()
         email = request.data.get('email')
         password = request.data.get('password')
         try:
@@ -63,7 +68,10 @@ class LoginView(APIView):
             login(request, user)
             token, _ = Token.objects.get_or_create(user=user)
             return Response({"token": token.key})
+        else:
+            print(f"Authentication failed for user: {email}")  # Добавить отладочную информацию
         return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
