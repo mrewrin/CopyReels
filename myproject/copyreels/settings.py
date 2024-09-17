@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     # Приложения проекта
-    'copyreels',
+    'copyreels.apps.CopyreelsConfig',
 ]
 
 
