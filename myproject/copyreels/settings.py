@@ -6,17 +6,14 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Добавьте определение DEBUG
-DEBUG = False  # Установите в False на продакшене
-
 # Секретный ключ (не публиковать в открытых репозиториях)
 SECRET_KEY = 'django-insecure-#ah$*4-(_mn$$_*h-47rrhr$e7ejl3%qgbe_qo7&p85)7pmf_v'
 
 # Режим отладки (выключать в продакшене)
+DEBUG = False  # Установите в False на продакшене
 
 # Разрешённые хосты (заполнять в продакшене)
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
 
 # ------------------------------------------------
 # Приложения
@@ -38,10 +35,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'rest_framework',
     'rest_framework.authtoken',
+
     # Приложения проекта
     'copyreels.apps.CopyreelsConfig',
 ]
-
 
 # ------------------------------------------------
 # Middleware (промежуточное ПО)
@@ -59,13 +56,11 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-
 # ------------------------------------------------
 # URL конфигурация
 # ------------------------------------------------
 
 ROOT_URLCONF = 'copyreels.urls'
-
 
 # ------------------------------------------------
 # Шаблоны
@@ -87,13 +82,11 @@ TEMPLATES = [
     },
 ]
 
-
 # ------------------------------------------------
 # WSGI приложение
 # ------------------------------------------------
 
 WSGI_APPLICATION = 'copyreels.wsgi.application'
-
 
 # ------------------------------------------------
 # База данных
@@ -105,7 +98,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # ------------------------------------------------
 # Валидация паролей
@@ -126,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # ------------------------------------------------
 # Интернационализация и временные зоны
 # ------------------------------------------------
@@ -137,7 +128,6 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True  # Локализация
 USE_TZ = True  # Использование временных зон
-
 
 # ------------------------------------------------
 # Статические и медиа файлы
@@ -150,6 +140,13 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+STATICFILES_DIRS = [
+    BASE_DIR.parent / "build/static",
+    BASE_DIR.parent / "src",
+]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка, куда collectstatic соберет все файлы
 
 # ------------------------------------------------
 # Настройки для allauth
@@ -175,7 +172,6 @@ ACCOUNT_RATE_LIMITS = {
 }
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[CopyReels]'  # Префикс в теме письма
 
-
 # ------------------------------------------------
 # Настройки почты
 # ------------------------------------------------
@@ -188,13 +184,11 @@ EMAIL_HOST_USER = 'mr.ewrin@gmail.com'  # Email отправителя
 EMAIL_HOST_PASSWORD = 'ncnx uxsm phtv joiw'  # Пароль приложения Gmail
 DEFAULT_FROM_EMAIL = 'mr.ewrin@gmail.com'  # Email по умолчанию для исходящих писем
 
-
 # ------------------------------------------------
 # Пользовательская модель
 # ------------------------------------------------
 
 AUTH_USER_MODEL = 'copyreels.CustomUser'
-
 
 # ------------------------------------------------
 # Дополнительные настройки
@@ -212,17 +206,36 @@ REST_FRAMEWORK = {
     ],
 }
 
-STATICFILES_DIRS = [
-    BASE_DIR.parent / "build/static",
-    BASE_DIR.parent / "src",
-]
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
-STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка
-# , куда collectstatic соберет все файлы
-
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+# ------------------------------------------------
+# Логирование
+# ------------------------------------------------
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',  # Set the console handler to show info-level logs
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',  # Set the root logger to INFO level
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',  # Set the Django logger to INFO level
+        },
+        'copyreels': {  # Your app name
+            'handlers': ['console'],
+            'level': 'INFO',  # Set your app logger to INFO level
+            'propagate': False,
+        },
+    },
+}
