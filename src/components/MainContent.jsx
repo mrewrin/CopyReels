@@ -48,6 +48,7 @@ export default function MainContent() {
   const [loadingMessage, setLoadingMessage] = useState("");
 
   useEffect(() => {
+    console.log("Загрузка сохраненной истории и избранного из localStorage...");
     const savedHistory = JSON.parse(localStorage.getItem("history")) || [];
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setHistory(savedHistory);
@@ -55,16 +56,19 @@ export default function MainContent() {
   }, []);
 
   const updateLocalStorage = (key, value) => {
+    console.log(`Обновление localStorage для ключа ${key}...`);
     localStorage.setItem(key, JSON.stringify(value));
   };
 
   const handleAddToHistory = (newEntry) => {
+    console.log("Добавление новой записи в историю:", newEntry);
     const updatedHistory = [newEntry, ...history];
     setHistory(updatedHistory);
     updateLocalStorage("history", updatedHistory);
   };
 
   const handleAddToFavorites = (entry) => {
+    console.log("Добавление/удаление записи в избранное:", entry);
     if (favorites.includes(entry)) {
       const updatedFavorites = favorites.filter((item) => item !== entry);
       setFavorites(updatedFavorites);
@@ -77,27 +81,32 @@ export default function MainContent() {
   };
 
   const handleOpenDialog = (entry) => {
+    console.log("Открытие диалога для удаления записи:", entry);
     setDeleteEntry(entry);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
+    console.log("Закрытие диалога удаления.");
     setOpenDialog(false);
     setDeleteEntry(null);
   };
 
   const handleConfirmDelete = () => {
+    console.log("Подтверждение удаления записи:", deleteEntry);
     handleRemoveFromHistory(deleteEntry);
     setOpenDialog(false);
     setDeleteEntry(null);
   };
 
   const handleRemoveFromHistory = (entry) => {
+    console.log("Удаление записи из истории:", entry);
     const updatedHistory = history.filter((item) => item !== entry);
     setHistory(updatedHistory);
     updateLocalStorage("history", updatedHistory);
 
     if (favorites.includes(entry)) {
+      console.log("Удаление записи из избранного:", entry);
       const updatedFavorites = favorites.filter((item) => item !== entry);
       setFavorites(updatedFavorites);
       updateLocalStorage("favorites", updatedFavorites);
@@ -106,6 +115,7 @@ export default function MainContent() {
 
   const handleTranscription = async () => {
     if (url.trim() !== "") {
+      console.log("Начало процесса транскрипции для URL:", url);
       setIsLoading(true);
       setLoadingMessage(
         "Происходит магия, ожидайте, это займет около 40 секунд..."
@@ -114,8 +124,13 @@ export default function MainContent() {
       try {
         // Get CSRF token from cookies
         const csrfToken = getCookie("csrftoken");
+        console.log("CSRF Token:", csrfToken);
 
-        // Send POST request to the API with CSRF token
+        // Get authorization token from localStorage
+        const authToken = localStorage.getItem("token");
+        console.log("Authorization Token:", authToken);
+
+        // Send POST request to the API with CSRF token and Authorization token
         const response = await fetch(
           "http://127.0.0.1:8000/api/process_video",
           {
@@ -123,6 +138,7 @@ export default function MainContent() {
             headers: {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken, // Include CSRF token in the headers
+              Authorization: `Token ${authToken}`, // Include Authorization token in the headers
             },
             body: JSON.stringify({ video_url: url }), // Send URL as a string
           }
@@ -130,6 +146,7 @@ export default function MainContent() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("Данные получены с сервера:", data);
 
           const newEntry = {
             title: `Транскрипция по (${url})`,
@@ -152,7 +169,7 @@ export default function MainContent() {
           );
         }
       } catch (error) {
-        console.error("Ошибка:", error);
+        console.error("Ошибка транскрипции:", error);
       } finally {
         setIsLoading(false);
         setLoadingMessage(""); // Clear the loading message
@@ -162,6 +179,7 @@ export default function MainContent() {
 
   const renderContent = () => {
     if (selectedTranscription) {
+      console.log("Отображение выбранной транскрипции:", selectedTranscription);
       return (
         <TranscriptionView
           transcription={selectedTranscription}
@@ -176,6 +194,8 @@ export default function MainContent() {
         : activeContent === "instagram"
         ? history.filter((entry) => entry.source === "Instagram")
         : history;
+
+    console.log("Отображение контента для:", activeContent);
 
     if (contentToRender.length === 0) {
       return (
@@ -203,7 +223,10 @@ export default function MainContent() {
             item
             xs={12}
             md={6}
-            onClick={() => setSelectedTranscription(entry)}
+            onClick={() => {
+              console.log("Выбрана транскрипция:", entry);
+              setSelectedTranscription(entry);
+            }}
             style={{ cursor: "pointer" }}
           >
             <Typography variant="subtitle2" color="textSecondary">
