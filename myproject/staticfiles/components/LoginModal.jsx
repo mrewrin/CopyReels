@@ -1,4 +1,3 @@
-// LoginModal.jsx
 import React, { useState } from "react";
 import {
   Modal,
@@ -17,7 +16,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const LoginModal = ({ onClose, setIsAuthenticated }) => {
+const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -54,7 +53,6 @@ const LoginModal = ({ onClose, setIsAuthenticated }) => {
       .then((data) => {
         if (data.token) {
           localStorage.setItem("token", data.token);
-          setIsAuthenticated(true); // Обновляем состояние авторизации
           onClose(); // Закрываем модальное окно
           navigate("/about"); // Перенаправляем на страницу About
         } else {
@@ -69,6 +67,7 @@ const LoginModal = ({ onClose, setIsAuthenticated }) => {
         setIsLoading(false);
       });
   };
+
   return (
     <Modal open={true} onClose={onClose}>
       <Box
