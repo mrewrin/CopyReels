@@ -16,7 +16,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const LoginModal = ({ onClose }) => {
+const LoginModal = ({ onClose, onLoginSuccess }) => {
+  // Добавляем onLoginSuccess как пропс
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -53,7 +54,7 @@ const LoginModal = ({ onClose }) => {
       .then((data) => {
         if (data.token) {
           localStorage.setItem("token", data.token);
-          onClose(); // Закрываем модальное окно
+          onLoginSuccess(); // Вызываем onLoginSuccess
           navigate("/about"); // Перенаправляем на страницу About
         } else {
           setError("Ошибка входа. Проверьте свои учетные данные.");
@@ -84,7 +85,7 @@ const LoginModal = ({ onClose }) => {
         }}
       >
         <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
-          Привет, здравствуйте 👋
+          Привет 👋
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
           Введите данные, которые вы использовали при регистрации.
