@@ -71,7 +71,7 @@ ROOT_URLCONF = 'copyreels.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'copyreels' / "static"],  # Путь к шаблонам проекта
+        'DIRS': [BASE_DIR.parent / 'build'],  # Путь к шаблонам проекта
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -210,12 +210,13 @@ REST_FRAMEWORK = {
 }
 
 STATICFILES_DIRS = [
-    BASE_DIR / "copyreels/static/src",  # Проверьте путь к этой папке
-    BASE_DIR / "copyreels/static/static",
+    BASE_DIR.parent / "build/static",
+    BASE_DIR.parent / "src",
 ]
 
 
-STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка, куда collectstatic соберет все файлы
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка
+# , куда collectstatic соберет все файлы
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']

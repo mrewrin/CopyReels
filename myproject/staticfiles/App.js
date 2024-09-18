@@ -47,12 +47,7 @@ const App = () => {
                 openRegisterModal={openRegisterModal}
               />
               <Footer />
-              {isLoginModalOpen && (
-                <LoginModal
-                  onClose={closeLoginModal}
-                  setIsAuthenticated={setIsAuthenticated} // Передаем функцию для обновления состояния авторизации
-                />
-              )}
+              {isLoginModalOpen && <LoginModal onClose={closeLoginModal} />}
               {isRegisterModalOpen && (
                 <RegisterModal onClose={closeRegisterModal} />
               )}
