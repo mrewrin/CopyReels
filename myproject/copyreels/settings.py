@@ -6,6 +6,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Добавьте определение DEBUG
+DEBUG = False  # Установите в False на продакшене
+
 # Секретный ключ (не публиковать в открытых репозиториях)
 SECRET_KEY = 'django-insecure-#ah$*4-(_mn$$_*h-47rrhr$e7ejl3%qgbe_qo7&p85)7pmf_v'
 
