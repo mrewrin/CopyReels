@@ -129,3 +129,7 @@ def check_task_status(request, task_id):
         return Response({'status': 'pending'}, status=status.HTTP_202_ACCEPTED)
     else:
         return Response({'status': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def about(request):
+    return render(request, 'about.html')

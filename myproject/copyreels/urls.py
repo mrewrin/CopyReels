@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
-from django.urls import path, include
+from django.urls import path, re_path, include
 from . import views
 from .views import (RegisterView, CustomEmailConfirmationView, LoginView, PasswordResetConfirmView,
                     process_video, check_task_status)
@@ -30,6 +30,7 @@ urlpatterns = [
 
                   # Главная страница
                   path('', TemplateView.as_view(template_name='index.html'), name='home'),
+                  path('about/', views.about, name='about'),
 
                   # Страница аккаунта
                   path('account/', views.account_view, name='account'),
