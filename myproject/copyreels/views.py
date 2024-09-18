@@ -1,6 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from .scade_integration import download_audio
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, get_user_model
 from rest_framework.authtoken.models import Token
@@ -98,3 +100,17 @@ class PasswordResetConfirmView(APIView):
 @login_required
 def account_view(request):
     return render(request, 'account/account.html')
+
+
+@api_view(['POST'])
+def process_video(request):
+    url = request.data.get('url')
+    user_info = request.data.get('user_info')
+    result = download_audio(url)  # Измените download_audio, чтобы она возвращала результаты
+
+    # Сохраните результаты в базу данных (используйте модель для хранения данных)
+
+    return Response({
+        'transcribation': result.get('Transcribation'),
+        'rewriting': result.get('Rewriting')
+    })
