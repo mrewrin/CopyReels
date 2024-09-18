@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     # Приложения проекта
-    'copyreels',
+    'copyreels.apps.CopyreelsConfig',
 ]
 
 
@@ -216,3 +216,7 @@ STATICFILES_DIRS = [
 
 
 STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка, куда collectstatic соберет все файлы
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'

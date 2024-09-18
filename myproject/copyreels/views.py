@@ -1,6 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from .scade_integration import download_audio
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, get_user_model
 from rest_framework.authtoken.models import Token
@@ -13,8 +15,10 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from allauth.account.utils import send_email_confirmation
 from allauth.account.views import ConfirmEmailView
-from allauth.account.models import EmailConfirmation
 from django.shortcuts import redirect
+from .models import VideoProcessResult
+from .scade_integration import process_video_task
+
 
 
 class RegisterView(APIView):
@@ -39,7 +43,12 @@ class CustomEmailConfirmationView(ConfirmEmailView):
         self.object = self.get_object()
         if self.object:
             self.object.confirm(self.request)
-            return JsonResponse({'status': 'success', 'message': 'Email confirmed successfully'})
+            self.object.email_address.user.is_active = True
+            self.object.email_address.user.save()
+            return redirect('http://127.0.0.1:8000/')
+
+            # Если хотите перенаправить пользователя на React страницу
+            # return redirect('/email-confirmed')
 
         # В случае ошибки или недействительной ссылки показать ошибку
         return JsonResponse({'status': 'error', 'message': 'Invalid confirmation link'}, status=400)
@@ -49,7 +58,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        User = get_user_model()  # Получаем модель пользователя здесь
+        User = get_user_model()
         email = request.data.get('email')
         password = request.data.get('password')
         try:
@@ -63,7 +72,10 @@ class LoginView(APIView):
             login(request, user)
             token, _ = Token.objects.get_or_create(user=user)
             return Response({"token": token.key})
+        else:
+            print(f"Authentication failed for user: {email}")  # Добавить отладочную информацию
         return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
@@ -90,3 +102,44 @@ class PasswordResetConfirmView(APIView):
 @login_required
 def account_view(request):
     return render(request, 'account/account.html')
+
+
+@api_view(['POST'])
+def process_video(request):
+    url = request.data.get('url')
+    user_info = request.data.get('user_info')
+    result = download_audio(url)  # Измените download_audio, чтобы она возвращала результаты
+
+    # Сохраните результаты в базу данных (используйте модель для хранения данных)
+
+    return Response({
+        'transcribation': result.get('Transcribation'),
+        'rewriting': result.get('Rewriting')
+    })
+
+
+@api_view(['POST'])
+def process_video(request):
+    url = request.data.get('url')
+    user_info = request.data.get('user_info')
+
+    # Запуск асинхронной задачи
+    task = process_video_task.delay(url, user_info)
+
+    return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(['GET'])
+def check_task_status(request, task_id):
+    task_result = process_video_task.AsyncResult(task_id)
+    if task_result.state == 'SUCCESS':
+        result_id = task_result.result
+        video_result = VideoProcessResult.objects.get(id=result_id)
+        return Response({
+            'transcribation': video_result.transcribation,
+            'rewriting': video_result.rewriting
+        }, status=status.HTTP_200_OK)
+    elif task_result.state == 'PENDING':
+        return Response({'status': 'pending'}, status=status.HTTP_202_ACCEPTED)
+    else:
+        return Response({'status': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

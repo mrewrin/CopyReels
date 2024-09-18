@@ -21,7 +21,8 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.urls import path, include
 from . import views
-from .views import RegisterView, CustomEmailConfirmationView, LoginView, PasswordResetConfirmView
+from .views import (RegisterView, CustomEmailConfirmationView, LoginView, PasswordResetConfirmView,
+                    process_video, check_task_status)
 
 
 urlpatterns = [
@@ -52,4 +53,7 @@ urlpatterns = [
                   path('api/login/', LoginView.as_view(), name='api_login'),
                   path('api/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(),
                        name='api_password_reset_confirm'),
+                  path('api/process_video/', process_video, name='process_video'),
+                  path('api/check_task_status/<str:task_id>/', check_task_status, name='check_task_status'),
+
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
