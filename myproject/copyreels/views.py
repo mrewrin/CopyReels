@@ -108,20 +108,6 @@ def account_view(request):
 def process_video(request):
     url = request.data.get('url')
     user_info = request.data.get('user_info')
-    result = download_audio(url)  # Измените download_audio, чтобы она возвращала результаты
-
-    # Сохраните результаты в базу данных (используйте модель для хранения данных)
-
-    return Response({
-        'transcribation': result.get('Transcribation'),
-        'rewriting': result.get('Rewriting')
-    })
-
-
-@api_view(['POST'])
-def process_video(request):
-    url = request.data.get('url')
-    user_info = request.data.get('user_info')
 
     # Запуск асинхронной задачи
     task = process_video_task.delay(url, user_info)
