@@ -132,4 +132,4 @@ def check_task_status(request, task_id):
 
 
 def about(request):
-    return render(request, 'about.html')
+    return render(request, 'index.html')
