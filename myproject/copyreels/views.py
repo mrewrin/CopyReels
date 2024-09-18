@@ -15,8 +15,10 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from allauth.account.utils import send_email_confirmation
 from allauth.account.views import ConfirmEmailView
-from allauth.account.models import EmailConfirmation
 from django.shortcuts import redirect
+from .models import VideoProcessResult
+from .scade_integration import process_video_task
+
 
 
 class RegisterView(APIView):
@@ -114,3 +116,30 @@ def process_video(request):
         'transcribation': result.get('Transcribation'),
         'rewriting': result.get('Rewriting')
     })
+
+
+@api_view(['POST'])
+def process_video(request):
+    url = request.data.get('url')
+    user_info = request.data.get('user_info')
+
+    # Запуск асинхронной задачи
+    task = process_video_task.delay(url, user_info)
+
+    return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(['GET'])
+def check_task_status(request, task_id):
+    task_result = process_video_task.AsyncResult(task_id)
+    if task_result.state == 'SUCCESS':
+        result_id = task_result.result
+        video_result = VideoProcessResult.objects.get(id=result_id)
+        return Response({
+            'transcribation': video_result.transcribation,
+            'rewriting': video_result.rewriting
+        }, status=status.HTTP_200_OK)
+    elif task_result.state == 'PENDING':
+        return Response({'status': 'pending'}, status=status.HTTP_202_ACCEPTED)
+    else:
+        return Response({'status': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

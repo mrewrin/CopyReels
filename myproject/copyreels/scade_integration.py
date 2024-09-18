@@ -1,10 +1,12 @@
 import yt_dlp
 import os
 import json
-from datetime import datetime
 import requests
 import logging
 import time
+from datetime import datetime
+from celery import shared_task
+from .models import VideoProcessResult
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -150,6 +152,17 @@ def get_scade_result(task_id, scade_access_token):
             logging.error(f"Ошибка при проверке статуса задачи Scade: {e}")
             break
 
-# # Пример использования
-# url = 'https://www.youtube.com/shorts/PrPOPbhpqoM'  # Замените на нужный URL
-# download_audio(url)
+
+@shared_task
+def process_video_task(url, user_info):
+    result = download_audio(url)
+    if result:
+        # Сохранение результатов в базу данных
+        video_result = VideoProcessResult.objects.create(
+            url=url,
+            user_info=user_info,
+            transcribation=result.get('Transcribation', ''),
+            rewriting=result.get('Rewriting', '')
+        )
+        return video_result.id
+    return None
