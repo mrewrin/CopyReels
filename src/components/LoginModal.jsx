@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const LoginModal = ({ onClose, onLoginSuccess }) => {
-  // Добавляем onLoginSuccess как пропс
   const [formData, setFormData] = useState({
     email: "",
     password: "",
