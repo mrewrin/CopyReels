@@ -10,7 +10,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#ah$*4-(_mn$$_*h-47rrhr$e7ejl3%qgbe_qo7&p85)7pmf_v'
 
 # Режим отладки (выключать в продакшене)
-DEBUG = True
 
 # Разрешённые хосты (заполнять в продакшене)
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -54,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',  # Middleware от allauth
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 
@@ -213,6 +213,8 @@ STATICFILES_DIRS = [
     BASE_DIR.parent / "build/static",
     BASE_DIR.parent / "src",
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка
