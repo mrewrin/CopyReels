@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Container, Box } from "@mui/material";
 import "./App.css";
@@ -25,17 +25,16 @@ const App = () => {
   const closeRegisterModal = () => setIsRegisterModalOpen(false);
   const closeEmailConfirm = () => setIsEmailConfirmOpen(false);
 
-  // Обработчик успешного логина
   const handleLoginSuccess = () => {
+    console.log("Login successful, navigating to /about");
     setIsAuthenticated(true);
     closeLoginModal();
-    navigate("/about"); // Перенаправляем на /about после успешного входа
+    navigate("/about"); // Перенаправление на About
   };
 
-  // Логика отправки запроса на бэкенд для авторизации
   const handleLogin = async (credentials) => {
     try {
-      const response = await fetch("https://your-backend-url.com/api/login", {
+      const response = await fetch("http://127.0.0.1:8000/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,9 +44,8 @@ const App = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // Проверяем успешность авторизации
         if (data.success) {
-          handleLoginSuccess(); // вызываем функцию для успешного логина
+          handleLoginSuccess(); // Вызываем функцию для успешного логина
         } else {
           console.log("Ошибка авторизации:", data.message);
         }
