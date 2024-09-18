@@ -1,8 +1,8 @@
+import logging
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from .scade_integration import download_audio
+from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, get_user_model
 from rest_framework.authtoken.models import Token
@@ -17,8 +17,12 @@ from allauth.account.utils import send_email_confirmation
 from allauth.account.views import ConfirmEmailView
 from django.shortcuts import redirect
 from .models import VideoProcessResult
-from .scade_integration import process_video_task
+from .scade_integration import process_video_task, download_audio
+from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.csrf import csrf_exempt
 
+
+logger = logging.getLogger(__name__)
 
 
 class RegisterView(APIView):
@@ -105,14 +109,29 @@ def account_view(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def process_video(request):
-    url = request.data.get('url')
-    user_info = request.data.get('user_info')
+    logger.info("Received process_video request")
 
-    # Запуск асинхронной задачи
-    task = process_video_task.delay(url, user_info)
+    # Log the request data for debugging
+    logger.info(f"Request data: {request.data}")
 
-    return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
+    try:
+        url = request.data.get('url')  # Получаем URL из тела запроса
+        user_info = request.data.get('user_info')
+
+        # Логгирование полученных данных
+        logger.info(f"Extracted URL: {url}")
+        logger.info(f"Extracted User Info: {user_info}")
+
+        # Запуск асинхронной задачи
+        task = process_video_task.delay(url, user_info)
+
+        logger.info(f"Started task with ID: {task.id}")
+        return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
+    except Exception as e:
+        logger.error(f"Error processing video: {e}")
+        return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
