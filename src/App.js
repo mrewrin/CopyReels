@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Container, Box } from "@mui/material";
 import "./App.css";
@@ -19,6 +19,15 @@ const App = () => {
   const [activeSection, setActiveSection] = useState("videoToText");
   const navigate = useNavigate();
 
+  // Проверка наличия токена в localStorage при загрузке приложения
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+      navigate("/about"); // Перенаправляем на About, если токен найден
+    }
+  }, [navigate]);
+
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
   const openRegisterModal = () => setIsRegisterModalOpen(true);
@@ -29,7 +38,7 @@ const App = () => {
     console.log("Login successful, navigating to /about");
     setIsAuthenticated(true);
     closeLoginModal();
-    navigate("/about"); // Перенаправление на About
+    navigate("/about"); // Перенаправление на About после успешного входа
   };
 
   const handleLogin = async (credentials) => {
@@ -44,7 +53,9 @@ const App = () => {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
+        if (data.success && data.token) {
+          // Сохраняем токен в localStorage
+          localStorage.setItem("token", data.token);
           handleLoginSuccess(); // Вызываем функцию для успешного логина
         } else {
           console.log("Ошибка авторизации:", data.message);
