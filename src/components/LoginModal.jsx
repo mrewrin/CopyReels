@@ -37,6 +37,8 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
     e.preventDefault();
     setIsLoading(true);
 
+    console.log("Attempting login with:", formData);
+
     fetch("http://127.0.0.1:8000/api/login/", {
       method: "POST",
       headers: {
@@ -45,22 +47,24 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
       body: JSON.stringify(formData),
     })
       .then((response) => {
+        console.log("Response received:", response);
         if (!response.ok) {
           throw new Error("Login failed");
         }
         return response.json();
       })
       .then((data) => {
+        console.log("Data received from API:", data);
         if (data.token) {
           localStorage.setItem("token", data.token);
-          onLoginSuccess(); // Вызываем onLoginSuccess
+          onLoginSuccess();
           navigate("/about"); // Перенаправляем на страницу About
         } else {
           setError("Ошибка входа. Проверьте свои учетные данные.");
         }
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error("Error during login:", error);
         setError("Произошла ошибка. Попробуйте еще раз.");
       })
       .finally(() => {
