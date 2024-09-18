@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Container, Box } from "@mui/material";
 import "./App.css";
@@ -25,11 +25,38 @@ const App = () => {
   const closeRegisterModal = () => setIsRegisterModalOpen(false);
   const closeEmailConfirm = () => setIsEmailConfirmOpen(false);
 
+  // Обработчик успешного логина
   const handleLoginSuccess = () => {
-    console.log("Login successful, navigating to /about");
     setIsAuthenticated(true);
     closeLoginModal();
-    navigate("/about");
+    navigate("/about"); // Перенаправляем на /about после успешного входа
+  };
+
+  // Логика отправки запроса на бэкенд для авторизации
+  const handleLogin = async (credentials) => {
+    try {
+      const response = await fetch("https://your-backend-url.com/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Проверяем успешность авторизации
+        if (data.success) {
+          handleLoginSuccess(); // вызываем функцию для успешного логина
+        } else {
+          console.log("Ошибка авторизации:", data.message);
+        }
+      } else {
+        console.log("Ошибка при выполнении запроса:", response.status);
+      }
+    } catch (error) {
+      console.log("Ошибка запроса:", error);
+    }
   };
 
   return (
@@ -46,7 +73,7 @@ const App = () => {
             {isLoginModalOpen && (
               <LoginModal
                 onClose={closeLoginModal}
-                onLoginSuccess={handleLoginSuccess}
+                onLogin={(credentials) => handleLogin(credentials)} // Передаем функцию логина
               />
             )}
             {isRegisterModalOpen && (
@@ -62,6 +89,7 @@ const App = () => {
         }
       />
 
+      {/* Защищённый маршрут для /about */}
       <Route
         path="/about"
         element={
@@ -76,7 +104,7 @@ const App = () => {
               </Box>
             </Box>
           ) : (
-            <Navigate to="/" />
+            <Navigate to="/" /> // Если не авторизован, перенаправляем на главную
           )
         }
       />
