@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Container, Box } from "@mui/material";
 import "./App.css";
@@ -31,14 +31,6 @@ const App = () => {
     closeLoginModal();
     navigate("/about");
   };
-
-  // Перенаправление на страницу about после логина
-  useEffect(() => {
-    if (isAuthenticated) {
-      console.log("User authenticated, navigating to /about");
-      navigate("/about");
-    }
-  }, [isAuthenticated, navigate]);
 
   return (
     <Routes>
