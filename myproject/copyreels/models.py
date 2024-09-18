@@ -12,3 +12,11 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class VideoProcessResult(models.Model):
+    url = models.URLField()
+    user_info = models.CharField(max_length=255)
+    transcribation = models.TextField()
+    rewriting = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
