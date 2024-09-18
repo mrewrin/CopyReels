@@ -50,7 +50,9 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
       .then((response) => {
         console.log("Response received:", response);
         if (!response.ok) {
-          throw new Error("Login failed");
+          return response.json().then((data) => {
+            throw new Error(data.error || "Login failed");
+          });
         }
         return response.json();
       })
@@ -68,7 +70,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
       })
       .catch((error) => {
         console.error("Error during login:", error);
-        setError("Произошла ошибка. Попробуйте еще раз.");
+        setError(error.message || "Произошла ошибка. Попробуйте еще раз.");
       })
       .finally(() => {
         setIsLoading(false);
