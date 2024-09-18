@@ -19,6 +19,23 @@ import TranscriptionView from "./TranscriptionView";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import InstagramIcon from "@mui/icons-material/Instagram";
 
+// Utility function to get the CSRF token from cookies
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 export default function MainContent() {
   const [activeContent, setActiveContent] = useState("all");
   const [history, setHistory] = useState([]);
@@ -95,15 +112,19 @@ export default function MainContent() {
       );
 
       try {
-        // Отправка POST-запроса на API
+        // Get CSRF token from cookies
+        const csrfToken = getCookie("csrftoken");
+
+        // Send POST request to the API with CSRF token
         const response = await fetch(
           "http://127.0.0.1:8000/api/process_video",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken, // Include CSRF token in the headers
             },
-            body: JSON.stringify({ video_url: url }), // Отправка URL как строки
+            body: JSON.stringify({ video_url: url }), // Send URL as a string
           }
         );
 
@@ -115,7 +136,7 @@ export default function MainContent() {
             url: url,
             source: "Instagram",
             date: new Date().toLocaleString(),
-            content: data.Transcribation, // Используем данные от сервера
+            content: data.Transcribation, // Use data from the server
             rewriteContent: data.Rewriting,
             wordCount: data.Transcribation.split(" ").length,
             rewriteWordCount: data.Rewriting.split(" ").length,
@@ -134,7 +155,7 @@ export default function MainContent() {
         console.error("Ошибка:", error);
       } finally {
         setIsLoading(false);
-        setLoadingMessage(""); // Убираем сообщение после завершения
+        setLoadingMessage(""); // Clear the loading message
       }
     }
   };
