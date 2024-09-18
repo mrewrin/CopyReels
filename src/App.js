@@ -1,27 +1,30 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import { Container, Box } from "@mui/material";
 import "./App.css";
 import "./output.css";
 import Main from "./components/Main";
-import SliderPartners from "./components/SliderPartners";
-import Faq from "./components/Faq";
-import Blog from "./components/Blog";
-import ContactUs from "./components/ContactUs";
-import ContentSection from "./components/ContentSection";
 import Footer from "./components/Footer";
 import About from "./components/AboutPage";
-import ContentTools from "./components/ContentTools";
 import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
-import ProtectedRoute from "./components/ProtectedRoute";
 import EmailConfirmation from "./components/EmailConfirmation";
-import HistorySection from "./components/HistorySection";
+import Sidebar from "./components/Sidebar";
 
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isEmailConfirmOpen, setIsEmailConfirmOpen] = useState(false);
+
+  // Состояние для отслеживания авторизации
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const [activeSection, setActiveSection] = useState("videoToText");
 
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
@@ -43,12 +46,6 @@ const App = () => {
                 openLoginModal={openLoginModal}
                 openRegisterModal={openRegisterModal}
               />
-              <SliderPartners />
-              <ContentSection />
-              <ContentTools />
-              <Faq />
-              <ContactUs />
-              <Blog />
               <Footer />
               {isLoginModalOpen && <LoginModal onClose={closeLoginModal} />}
               {isRegisterModalOpen && (
@@ -63,16 +60,27 @@ const App = () => {
             </Container>
           }
         />
+
+        {/* Защищённый маршрут для /about */}
         <Route
           path="/about"
           element={
-            <ProtectedRoute>
-              <Box width="100%">
-                <About />
+            isAuthenticated ? (
+              <Box display="flex">
+                <Sidebar
+                  onMenuItemClick={setActiveSection}
+                  activeItem={activeSection}
+                />
+                <Box width="100%">
+                  <About />
+                </Box>
               </Box>
-            </ProtectedRoute>
+            ) : (
+              <Navigate to="/" /> // Перенаправление на главную страницу, если не авторизован
+            )
           }
         />
+
         <Route
           path="/accounts/confirm-email/:token"
           element={

@@ -3,6 +3,7 @@ import Header from "./Header";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import mainImage from "../images/mainimage.png";
+import { Box, Typography, Button } from "@mui/material";
 
 export default function Main() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -17,44 +18,94 @@ export default function Main() {
 
   return (
     <div>
-      {/* Header должен рендериться только один раз здесь */}
+      {/* Header */}
       <Header
         openLoginModal={openLoginModal}
         openRegisterModal={openRegisterModal}
       />
 
-      <div className="flex flex-col md:flex-row items-center justify-between p-8 md:p-16 bg-gray-50">
-        <div className="flex flex-col items-start md:w-1/2 space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+      {/* Main Section */}
+      <Box
+        display="flex"
+        flexDirection={{ xs: "column", md: "row" }}
+        alignItems="center"
+        justifyContent="space-between"
+        p={{ xs: 4, md: 8 }}
+      >
+        <Box
+          flexDirection="column"
+          alignItems="flex-start"
+          flexBasis={{ md: "50%" }}
+          mb={{ xs: 4, md: 0 }}
+          textAlign={{ xs: "center", md: "left" }}
+        >
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            color="textPrimary"
+            gutterBottom
+          >
             CopyREELS
-          </h1>
-          <p className="text-lg text-gray-600">
+          </Typography>
+          <Typography variant="body1" color="textSecondary" paragraph>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit,
             consectetur?
-          </p>
-          <div className="flex space-x-4">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full text-lg font-semibold"
+          </Typography>
+          <Box
+            display="flex"
+            gap={2}
+            justifyContent={{ xs: "center", md: "flex-start" }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
               onClick={openRegisterModal}
+              sx={{
+                px: 4,
+                py: 1.5,
+                borderRadius: "20px",
+                fontSize: "1rem",
+                fontWeight: "bold",
+                backgroundColor: "#8e44ad",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+              }}
             >
               Sign up for free &rarr;
-            </button>
-            <button
-              className="bg-gray-200 hover:bg-gray-300 text-gray-900 px-6 py-3 rounded-full text-lg font-semibold"
+            </Button>
+            <Button
+              variant="outlined"
               onClick={openLoginModal}
+              sx={{
+                px: 4,
+                py: 1.5,
+                borderRadius: "20px",
+                fontSize: "1rem",
+                fontWeight: "bold",
+                color: "textPrimary",
+                borderColor: "#ccc",
+                "&:hover": {
+                  borderColor: "#bbb",
+                },
+              }}
             >
               Login
-            </button>
-          </div>
-        </div>
-        <div className="relative md:w-1/2 mt-8 md:mt-0">
+            </Button>
+          </Box>
+        </Box>
+        <Box flexBasis={{ md: "50%" }} textAlign="center">
           <img
             src={mainImage}
             alt="Screenshot of the application interface"
-            className="rounded-lg shadow-lg"
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              maxWidth: "100%",
+              height: "auto",
+            }}
           />
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Модальные окна */}
       {isLoginModalOpen && <LoginModal onClose={closeModal} />}

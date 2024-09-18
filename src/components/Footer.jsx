@@ -15,14 +15,16 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        background: "linear-gradient(135deg, #f7f7f7, #ffffff)", // Lighter gradient background
         color: "#333",
         pt: 8,
         pb: 4,
+
+        borderTopLeftRadius: "16px",
+        borderTopRightRadius: "16px",
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justifyContent="space-between">
           {/* Logo and Description */}
           <Grid item xs={12} md={4}>
             <Typography variant="h5" component="h2" gutterBottom>
@@ -40,50 +42,29 @@ const Footer = () => {
               Features
             </Typography>
             <Box component="ul" sx={{ listStyle: "none", pl: 0 }}>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  AI-Powered Transcription
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  Multi-Language Support
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  Secure and Private
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  High Accuracy
-                </Link>
-              </li>
+              {[
+                "AI-Powered Transcription",
+                "Multi-Language Support",
+                "Secure and Private",
+                "High Accuracy",
+              ].map((feature, index) => (
+                <li key={index}>
+                  <Link
+                    href="#"
+                    variant="body2"
+                    color="textSecondary"
+                    underline="hover"
+                    sx={{
+                      display: "block",
+                      mb: 1,
+                      transition: "color 0.3s",
+                      "&:hover": { color: "#6c63ff" },
+                    }}
+                  >
+                    {feature}
+                  </Link>
+                </li>
+              ))}
             </Box>
           </Grid>
 
@@ -93,55 +74,29 @@ const Footer = () => {
               Learning Center
             </Typography>
             <Box component="ul" sx={{ listStyle: "none", pl: 0 }}>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  Tutorials
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  variant="body2"
-                  color="textSecondary"
-                  underline="hover"
-                  sx={{ display: "block", mb: 1 }}
-                >
-                  Support
-                </Link>
-              </li>
+              {["Tutorials", "Blog", "FAQs", "Support"].map((item, index) => (
+                <li key={index}>
+                  <Link
+                    href="#"
+                    variant="body2"
+                    color="textSecondary"
+                    underline="hover"
+                    sx={{
+                      display: "block",
+                      mb: 1,
+                      transition: "color 0.3s",
+                      "&:hover": { color: "#6c63ff" },
+                    }}
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </Box>
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 4, backgroundColor: "grey.400" }} />
+        <Divider sx={{ my: 4, backgroundColor: "#e0e0e0" }} />
 
         {/* Social Media Links */}
         <Box textAlign="center" sx={{ mt: 4 }}>
@@ -149,30 +104,26 @@ const Footer = () => {
             Follow Us
           </Typography>
           <Box>
-            <IconButton
-              aria-label="Facebook"
-              href="#"
-              sx={{ color: "#3b5998" }}
-            >
-              <Facebook />
-            </IconButton>
-            <IconButton aria-label="Twitter" href="#" sx={{ color: "#00acee" }}>
-              <Twitter />
-            </IconButton>
-            <IconButton
-              aria-label="Instagram"
-              href="#"
-              sx={{ color: "#C13584" }}
-            >
-              <Instagram />
-            </IconButton>
-            <IconButton
-              aria-label="LinkedIn"
-              href="#"
-              sx={{ color: "#0072b1" }}
-            >
-              <LinkedIn />
-            </IconButton>
+            {[
+              { icon: <Facebook />, color: "#3b5998" },
+              { icon: <Twitter />, color: "#00acee" },
+              { icon: <Instagram />, color: "#C13584" },
+              { icon: <LinkedIn />, color: "#0072b1" },
+            ].map((social, index) => (
+              <IconButton
+                key={index}
+                aria-label={social.name}
+                href="#"
+                sx={{
+                  color: social.color,
+                  mx: 1,
+                  transition: "transform 0.2s",
+                  "&:hover": { transform: "scale(1.1)" },
+                }}
+              >
+                {social.icon}
+              </IconButton>
+            ))}
           </Box>
         </Box>
       </Container>

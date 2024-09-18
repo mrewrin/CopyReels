@@ -7,8 +7,14 @@ import {
   Typography,
   CircularProgress,
   Alert,
+  IconButton,
+  InputAdornment,
+  Checkbox,
+  FormControlLabel,
+  Link,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -17,6 +23,7 @@ const LoginModal = ({ onClose }) => {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -70,36 +77,64 @@ const LoginModal = ({ onClose }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: 400,
-          bgcolor: "background.paper",
-          borderRadius: 1,
+          bgcolor: "#f9f9f9",
+          borderRadius: "12px",
           boxShadow: 24,
           p: 4,
         }}
       >
-        <Typography variant="h6" component="h2" gutterBottom>
-          Вход
+        <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+          Привет, здравствуйте 👋
+        </Typography>
+        <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
+          Введите данные, которые вы использовали при регистрации.
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
             margin="normal"
-            label="Email"
+            label="Электронная почта"
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
+            InputProps={{
+              style: { borderRadius: "8px" },
+            }}
           />
           <TextField
             fullWidth
             margin="normal"
             label="Пароль"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             value={formData.password}
             onChange={handleChange}
             required
+            InputProps={{
+              style: { borderRadius: "8px" },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+            <FormControlLabel
+              control={<Checkbox color="primary" />}
+              label="Запомнить меня"
+            />
+            <Link href="#" variant="body2" color="primary">
+              Забыли пароль?
+            </Link>
+          </Box>
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
@@ -108,10 +143,17 @@ const LoginModal = ({ onClose }) => {
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             fullWidth
             disabled={isLoading}
-            sx={{ mt: 2 }}
+            sx={{
+              mt: 3,
+              borderRadius: "8px",
+              padding: "12px 0",
+              backgroundColor: "#7c5cff",
+              "&:hover": {
+                backgroundColor: "#6c4ecc",
+              },
+            }}
           >
             {isLoading ? <CircularProgress size={24} /> : "Войти"}
           </Button>

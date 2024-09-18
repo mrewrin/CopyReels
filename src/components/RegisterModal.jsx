@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Modal } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Modal,
+  Alert,
+} from "@mui/material";
 
 function RegisterModal({ onClose }) {
   const [formData, setFormData] = useState({
@@ -90,13 +97,13 @@ function RegisterModal({ onClose }) {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: 400,
-            bgcolor: "background.paper",
-            borderRadius: 1,
+            bgcolor: "#f9f9f9",
+            borderRadius: "12px",
             boxShadow: 24,
             p: 4,
           }}
         >
-          <Typography variant="h6" component="h2" gutterBottom>
+          <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
             Регистрация
           </Typography>
           <form onSubmit={handleSubmit}>
@@ -109,6 +116,9 @@ function RegisterModal({ onClose }) {
               onChange={handleChange}
               error={!!errors.username}
               helperText={errors.username}
+              InputProps={{
+                style: { borderRadius: "8px" },
+              }}
             />
             <TextField
               fullWidth
@@ -119,6 +129,9 @@ function RegisterModal({ onClose }) {
               onChange={handleChange}
               error={!!errors.email}
               helperText={errors.email}
+              InputProps={{
+                style: { borderRadius: "8px" },
+              }}
             />
             <TextField
               fullWidth
@@ -130,6 +143,9 @@ function RegisterModal({ onClose }) {
               onChange={handleChange}
               error={!!errors.password}
               helperText={errors.password}
+              InputProps={{
+                style: { borderRadius: "8px" },
+              }}
             />
             <TextField
               fullWidth
@@ -141,13 +157,28 @@ function RegisterModal({ onClose }) {
               onChange={handleChange}
               error={!!errors.password_confirm}
               helperText={errors.password_confirm}
+              InputProps={{
+                style: { borderRadius: "8px" },
+              }}
             />
+            {Object.keys(errors).length > 0 && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                Пожалуйста, исправьте ошибки.
+              </Alert>
+            )}
             <Button
               variant="contained"
-              color="primary"
               type="submit"
               fullWidth
-              sx={{ mt: 2 }}
+              sx={{
+                mt: 3,
+                borderRadius: "8px",
+                padding: "12px 0",
+                backgroundColor: "#7c5cff",
+                "&:hover": {
+                  backgroundColor: "#6c4ecc",
+                },
+              }}
             >
               Зарегистрироваться
             </Button>
@@ -164,13 +195,13 @@ function RegisterModal({ onClose }) {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: 400,
-            bgcolor: "background.paper",
-            borderRadius: 1,
+            bgcolor: "#f9f9f9",
+            borderRadius: "12px",
             boxShadow: 24,
             p: 4,
           }}
         >
-          <Typography variant="h6" component="h2" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             Проверьте вашу почту
           </Typography>
           <Typography>
@@ -180,10 +211,17 @@ function RegisterModal({ onClose }) {
           </Typography>
           <Button
             variant="contained"
-            color="primary"
             onClick={onClose}
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{
+              mt: 2,
+              borderRadius: "8px",
+              padding: "12px 0",
+              backgroundColor: "#7c5cff",
+              "&:hover": {
+                backgroundColor: "#6c4ecc",
+              },
+            }}
           >
             Закрыть
           </Button>
