@@ -36,6 +36,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(""); // Сбрасываем ошибку перед отправкой
 
     console.log("Attempting login with:", formData);
 
@@ -57,7 +58,9 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
         console.log("Data received from API:", data);
         if (data.token) {
           localStorage.setItem("token", data.token);
-          onLoginSuccess();
+          if (typeof onLoginSuccess === "function") {
+            onLoginSuccess(); // Проверка, является ли onLoginSuccess функцией
+          }
           navigate("/about"); // Перенаправляем на страницу About
         } else {
           setError("Ошибка входа. Проверьте свои учетные данные.");
