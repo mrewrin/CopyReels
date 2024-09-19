@@ -16,7 +16,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const LoginModal = ({ onClose }) => {
+const LoginModal = ({ onClose, onLoginSuccess }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,8 +36,11 @@ const LoginModal = ({ onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(""); // Сбрасываем ошибку перед отправкой
 
-    fetch("http://127.0.0.1:8000/api/login/", {
+    console.log("Attempting login with:", formData);
+
+    fetch("http://176.124.212.138/api/login/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,23 +48,29 @@ const LoginModal = ({ onClose }) => {
       body: JSON.stringify(formData),
     })
       .then((response) => {
+        console.log("Response received:", response);
         if (!response.ok) {
-          throw new Error("Login failed");
+          return response.json().then((data) => {
+            throw new Error(data.error || "Login failed");
+          });
         }
         return response.json();
       })
       .then((data) => {
+        console.log("Data received from API:", data);
         if (data.token) {
           localStorage.setItem("token", data.token);
-          onClose(); // Закрываем модальное окно
+          if (typeof onLoginSuccess === "function") {
+            onLoginSuccess(); // Проверка, является ли onLoginSuccess функцией
+          }
           navigate("/about"); // Перенаправляем на страницу About
         } else {
           setError("Ошибка входа. Проверьте свои учетные данные.");
         }
       })
       .catch((error) => {
-        console.error("Error:", error);
-        setError("Произошла ошибка. Попробуйте еще раз.");
+        console.error("Error during login:", error);
+        setError(error.message || "Произошла ошибка. Попробуйте еще раз.");
       })
       .finally(() => {
         setIsLoading(false);
@@ -84,7 +93,7 @@ const LoginModal = ({ onClose }) => {
         }}
       >
         <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
-          Привет, здравствуйте 👋
+          Привет 👋
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
           Введите данные, которые вы использовали при регистрации.
