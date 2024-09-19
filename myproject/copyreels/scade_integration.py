@@ -36,44 +36,6 @@ def upload_to_file_io(file_path):
     return None
 
 
-import yt_dlp
-import os
-import json
-import requests
-import logging
-import time
-from datetime import datetime
-from celery import shared_task
-from .models import VideoProcessResult
-
-# Настройка логирования
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Ваши переменные
-SCADE_FLOW = 37048
-SCADE_ACCESS_TOKEN = "NWJhNjYxZjktNDIwNS00YWYwLThmYzctYjMzMGE1ODY4YTk5Om9SblZPOWJtNU83RHhWSDZqUDFlaE8wZlV5eW05ZA=="
-
-
-def upload_to_file_io(file_path):
-    try:
-        logging.info(f"Начало загрузки файла {file_path} на file.io")
-        with open(file_path, 'rb') as f:
-            files = {'file': f}
-            response = requests.post('https://file.io/', files=files)
-            if response.status_code == 200:
-                response_data = response.json()
-                if response_data.get('success'):
-                    logging.info(f"Файл успешно загружен на file.io: {response_data.get('link')}")
-                    return response_data.get('link')
-                else:
-                    logging.error(f"Ошибка при загрузке на file.io: {response_data.get('message')}")
-            else:
-                logging.error(f"Ошибка при загрузке на file.io: {response.status_code} {response.text}")
-    except Exception as e:
-        logging.error(f"Ошибка при загрузке на file.io: {e}")
-    return None
-
-
 def download_audio(url, output_folder='audio_files'):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
     # Создаем папку, если она не существует
@@ -137,7 +99,6 @@ def start_scade_flow(flow_id, scade_access_token, audio_file_url):
         "Content-Type": "application/json"
     }
 
-    # Передаем URL файла в узел Scade
     payload = json.dumps({
         "start_node_id": "KgoQ-start",
         "end_node_id": "AQ6K-end",
@@ -151,9 +112,9 @@ def start_scade_flow(flow_id, scade_access_token, audio_file_url):
         }
     })
 
-    # Отправляем запрос на Scade API
     try:
         response = requests.post(url, headers=headers, data=payload)
+        logging.info(f"Ответ от Scade API: {response.status_code} - {response.text}")
         if response.status_code == 200:
             logging.info("Запрос к Scade API успешно отправлен")
             return response.json().get('id')
@@ -166,14 +127,15 @@ def start_scade_flow(flow_id, scade_access_token, audio_file_url):
 
 
 
-def get_scade_result(task_id, scade_access_token):
+def get_scade_result(task_id, scade_access_token, max_attempts=50):
     logging.info(f"Ожидание завершения задачи Scade с ID {task_id}")
     result_url = f"https://api.scade.pro/api/v1/task/{task_id}"
     headers = {
         "Authorization": f"Basic {scade_access_token}",
         "Content-Type": "application/json"
     }
-    while True:
+    attempts = 0
+    while attempts < max_attempts:
         try:
             response = requests.get(result_url, headers=headers)
             if response.status_code == 200:
@@ -186,86 +148,12 @@ def get_scade_result(task_id, scade_access_token):
             else:
                 logging.error(f"Ошибка при получении результата: {response.status_code}")
             time.sleep(5)
+            attempts += 1
         except Exception as e:
             logging.error(f"Ошибка при проверке статуса задачи Scade: {e}")
             break
-
-
-@shared_task
-def process_video_task(url, user_info):
-    result = download_audio(url)
-    if result:
-        # Сохранение результатов в базу данных
-        video_result = VideoProcessResult.objects.create(
-            url=url,
-            user_info=user_info,
-            transcribation=result.get('Transcribation', ''),
-            rewriting=result.get('Rewriting', '')
-        )
-        return video_result.id
+    logging.error(f"Задача Scade не завершена после {max_attempts} попыток.")
     return None
-
-
-def start_scade_flow(flow_id, scade_access_token, audio_file_url):
-    logging.info(f"Запуск потока Scade для URL {audio_file_url}")
-    url = f"https://api.scade.pro/api/v1/scade/flow/{flow_id}/execute"
-    headers = {
-        "Authorization": f"Basic {scade_access_token}",
-        "Content-Type": "application/json"
-    }
-
-    # Передаем URL файла в узел Scade
-    payload = json.dumps({
-        "start_node_id": "KgoQ-start",
-        "end_node_id": "AQ6K-end",
-        "result_node_id": "AQ6K-end",
-        "node_settings": {
-            "KgoQ-start": {
-                "data": {
-                    "audio": audio_file_url  # Передаем URL файла как строку
-                }
-            }
-        }
-    })
-
-    # Отправляем запрос на Scade API
-    try:
-        response = requests.post(url, headers=headers, data=payload)
-        if response.status_code == 200:
-            logging.info("Запрос к Scade API успешно отправлен")
-            return response.json().get('id')
-        else:
-            logging.error(f"Ошибка при запуске флоу: {response.status_code}, Response content: {response.content}")
-            return None
-    except Exception as e:
-        logging.error(f"Ошибка при отправке запроса к Scade API: {e}")
-        return None
-
-
-
-def get_scade_result(task_id, scade_access_token):
-    logging.info(f"Ожидание завершения задачи Scade с ID {task_id}")
-    result_url = f"https://api.scade.pro/api/v1/task/{task_id}"
-    headers = {
-        "Authorization": f"Basic {scade_access_token}",
-        "Content-Type": "application/json"
-    }
-    while True:
-        try:
-            response = requests.get(result_url, headers=headers)
-            if response.status_code == 200:
-                result_data = response.json()
-                if result_data['status'] == 3:  # Task completed
-                    logging.info("Задача Scade завершена")
-                    return result_data['result']
-                else:
-                    logging.info("Задача в процессе выполнения...")
-            else:
-                logging.error(f"Ошибка при получении результата: {response.status_code}")
-            time.sleep(5)
-        except Exception as e:
-            logging.error(f"Ошибка при проверке статуса задачи Scade: {e}")
-            break
 
 
 @shared_task
