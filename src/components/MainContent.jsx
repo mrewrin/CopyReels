@@ -141,7 +141,7 @@ export default function MainContent() {
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken, // Include CSRF token in the headers
-            Authorization: `Value ${authToken}`, // Include Authorization token if present
+            Authorization: `Token ${authToken}`, // Include Authorization token if present
           },
           body: JSON.stringify({ video_url: url }), // Send URL as a string
         });
