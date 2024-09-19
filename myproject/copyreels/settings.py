@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
 
     # Приложения проекта
     'copyreels.apps.CopyreelsConfig',
@@ -45,7 +46,9 @@ INSTALLED_APPS = [
 # ------------------------------------------------
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -53,7 +56,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',  # Middleware от allauth
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 # ------------------------------------------------
@@ -135,10 +137,7 @@ USE_TZ = True  # Использование временных зон
 
 # Статические файлы (CSS, JavaScript, изображения)
 STATIC_URL = '/static/'
-
-# Медиа файлы (для загрузки изображений и файлов)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка, куда collectstatic соберет все файлы
 
 STATICFILES_DIRS = [
     BASE_DIR.parent / "build/static",
@@ -146,7 +145,10 @@ STATICFILES_DIRS = [
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка, куда collectstatic соберет все файлы
+
+# Медиа файлы (для загрузки изображений и файлов)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # ------------------------------------------------
 # Настройки для allauth
@@ -239,3 +241,11 @@ LOGGING = {
         },
     },
 }
+
+# ------------------------------------------------
+# Настройки CORS
+# ------------------------------------------------
+
+CORS_ALLOWED_ORIGINS = [
+    'http://176.124.212.138',  # Укажите здесь ваш домен
+]
