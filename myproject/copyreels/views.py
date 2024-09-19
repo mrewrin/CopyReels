@@ -117,15 +117,15 @@ def process_video(request):
     logger.info(f"Request data: {request.data}")
 
     try:
-        url = request.data.get('url')  # Получаем URL из тела запроса
+        video_url = request.data.get('video_url')  # Получаем URL из тела запроса
         user_info = request.data.get('user_info')
 
         # Логгирование полученных данных
-        logger.info(f"Extracted URL: {url}")
+        logger.info(f"Extracted URL: {video_url}")
         logger.info(f"Extracted User Info: {user_info}")
 
         # Запуск асинхронной задачи
-        task = process_video_task.delay(url, user_info)
+        task = process_video_task.delay(video_url, user_info)
 
         logger.info(f"Started task with ID: {task.id}")
         return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
