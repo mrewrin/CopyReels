@@ -99,35 +99,36 @@ def start_scade_flow(flow_id, scade_access_token, audio_file_url):
         "Content-Type": "application/json"
     }
 
-    payload = json.dumps({
+    payload = {
         "start_node_id": "KgoQ-start",
         "end_node_id": "AQ6K-end",
         "result_node_id": "AQ6K-end",
         "node_settings": {
             "KgoQ-start": {
                 "data": {
-                    "audio": audio_file_url  # Передаем URL файла как строку
+                    "audio": audio_file_url
                 }
             }
         }
-    })
+    }
 
     try:
-        response = requests.post(url, headers=headers, data=payload)
+        # Увеличен timeout до 120 секунд
+        response = requests.post(url, headers=headers, json=payload, timeout=120)
+        response.raise_for_status()
+        response_data = response.json()
         logging.info(f"Ответ от Scade API: {response.status_code} - {response.text}")
-        if response.status_code == 200:
-            logging.info("Запрос к Scade API успешно отправлен")
-            return response.json().get('id')
-        else:
-            logging.error(f"Ошибка при запуске флоу: {response.status_code}, Response content: {response.content}")
-            return None
+        return response_data.get('id')
+    except requests.exceptions.HTTPError as http_err:
+        logging.error(f"HTTP ошибка при запуске флоу: {http_err}")
+    except requests.exceptions.RequestException as err:
+        logging.error(f"Ошибка при отправке запроса к Scade API: {err}")
     except Exception as e:
-        logging.error(f"Ошибка при отправке запроса к Scade API: {e}")
-        return None
+        logging.error(f"Неожиданная ошибка при запуске флоу: {e}")
+    return None
 
 
-
-def get_scade_result(task_id, scade_access_token, max_attempts=50):
+def get_scade_result(task_id, scade_access_token, max_attempts=50, timeout=300):
     logging.info(f"Ожидание завершения задачи Scade с ID {task_id}")
     result_url = f"https://api.scade.pro/api/v1/task/{task_id}"
     headers = {
@@ -137,35 +138,53 @@ def get_scade_result(task_id, scade_access_token, max_attempts=50):
     attempts = 0
     while attempts < max_attempts:
         try:
-            response = requests.get(result_url, headers=headers)
-            if response.status_code == 200:
-                result_data = response.json()
-                if result_data['status'] == 3:  # Task completed
-                    logging.info("Задача Scade завершена")
-                    return result_data['result']
-                else:
-                    logging.info("Задача в процессе выполнения...")
+            # Увеличен тайм-аут для каждого запроса
+            response = requests.get(result_url, headers=headers, timeout=timeout)
+            response.raise_for_status()
+            result_data = response.json()
+            if result_data['status'] == 3:  # Task completed
+                logging.info("Задача Scade завершена")
+                return result_data['result']
             else:
-                logging.error(f"Ошибка при получении результата: {response.status_code}")
-            time.sleep(5)
-            attempts += 1
-        except Exception as e:
-            logging.error(f"Ошибка при проверке статуса задачи Scade: {e}")
+                logging.info("Задача в процессе выполнения...")
+        except requests.exceptions.HTTPError as http_err:
+            logging.error(f"HTTP ошибка при получении результата: {http_err}")
             break
+        except requests.exceptions.RequestException as err:
+            logging.error(f"Ошибка при получении результата: {err}")
+            break
+        except Exception as e:
+            logging.error(f"Неожиданная ошибка при проверке статуса задачи Scade: {e}")
+            break
+        time.sleep(5)
+        attempts += 1
     logging.error(f"Задача Scade не завершена после {max_attempts} попыток.")
     return None
 
 
 @shared_task
 def process_video_task(url, user_info):
+    logging.info(f"Начата обработка видео с URL: {url} для пользователя: {user_info}")
+
+    # Этап 1: Скачивание аудио
+    logging.info("Начато скачивание аудио.")
     result = download_audio(url)
     if result:
-        # Сохранение результатов в базу данных
+        logging.info("Аудио успешно скачано и обработано.")
+
+        # Этап 2: Сохранение результатов в базу данных
+        logging.info("Начинаем сохранение результатов в базу данных.")
         video_result = VideoProcessResult.objects.create(
             url=url,
             user_info=user_info,
             transcribation=result.get('Transcribation', ''),
             rewriting=result.get('Rewriting', '')
         )
+        logging.info(f"Результаты сохранены в базу данных с ID: {video_result.id}")
+
         return video_result.id
+    else:
+        logging.error("Ошибка при скачивании аудио или его обработке.")
+
     return None
+

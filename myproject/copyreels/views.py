@@ -125,7 +125,7 @@ def process_video(request):
         logger.info(f"Extracted User Info: {user_info}")
 
         # Запуск асинхронной задачи
-        task = process_video_task.delay(video_url, user_info)
+        task = process_video_task(video_url, user_info)
 
         logger.info(f"Started task with ID: {task.id}")
         return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
