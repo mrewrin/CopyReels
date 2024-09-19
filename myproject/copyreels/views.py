@@ -119,15 +119,19 @@ def process_video(request):
     try:
         video_url = request.data.get('video_url')  # Получаем URL из тела запроса
         user_info = request.data.get('user_info')
+        user_info = user_info or 'Unknown'
 
         # Логгирование полученных данных
         logger.info(f"Extracted URL: {video_url}")
         logger.info(f"Extracted User Info: {user_info}")
 
         # Запуск асинхронной задачи
-        task = process_video_task(video_url, user_info)
-
+        task = process_video_task.delay(video_url, user_info)
         logger.info(f"Started task with ID: {task.id}")
+        if not task:
+            logger.error("Failed to create Celery task.")
+            return Response({'error': 'Failed to create task'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
     except Exception as e:
         logger.error(f"Error processing video: {e}")
@@ -146,9 +150,8 @@ def check_task_status(request, task_id):
         }, status=status.HTTP_200_OK)
     elif task_result.state == 'PENDING':
         return Response({'status': 'pending'}, status=status.HTTP_202_ACCEPTED)
+    elif task_result.state == 'FAILURE':
+        logger.error(f"Task {task_id} failed: {task_result.info}")
+        return Response({'status': 'failed', 'error': str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({'status': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-def about(request):
-    return render(request, 'index.html')
+        return Response({'status': task_result.state}, status=status.HTTP_200_OK)

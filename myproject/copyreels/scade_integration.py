@@ -128,7 +128,7 @@ def start_scade_flow(flow_id, scade_access_token, audio_file_url):
     return None
 
 
-def get_scade_result(task_id, scade_access_token, max_attempts=50, timeout=300):
+def get_scade_result(task_id, scade_access_token, max_attempts=25, timeout=300):
     logging.info(f"Ожидание завершения задачи Scade с ID {task_id}")
     result_url = f"https://api.scade.pro/api/v1/task/{task_id}"
     headers = {
@@ -138,7 +138,6 @@ def get_scade_result(task_id, scade_access_token, max_attempts=50, timeout=300):
     attempts = 0
     while attempts < max_attempts:
         try:
-            # Увеличен тайм-аут для каждого запроса
             response = requests.get(result_url, headers=headers, timeout=timeout)
             response.raise_for_status()
             result_data = response.json()
@@ -146,7 +145,7 @@ def get_scade_result(task_id, scade_access_token, max_attempts=50, timeout=300):
                 logging.info("Задача Scade завершена")
                 return result_data['result']
             else:
-                logging.info("Задача в процессе выполнения...")
+                logging.info(f"Задача в процессе выполнения. Попытка {attempts + 1}/{max_attempts}")
         except requests.exceptions.HTTPError as http_err:
             logging.error(f"HTTP ошибка при получении результата: {http_err}")
             break
@@ -156,7 +155,7 @@ def get_scade_result(task_id, scade_access_token, max_attempts=50, timeout=300):
         except Exception as e:
             logging.error(f"Неожиданная ошибка при проверке статуса задачи Scade: {e}")
             break
-        time.sleep(5)
+        time.sleep(10)  # Увеличиваем задержку между попытками до 10 секунд
         attempts += 1
     logging.error(f"Задача Scade не завершена после {max_attempts} попыток.")
     return None
