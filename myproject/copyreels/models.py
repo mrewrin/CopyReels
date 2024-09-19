@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
 
 class VideoProcessResult(models.Model):
     url = models.URLField()
-    user_info = models.CharField(max_length=255)
+    user_info = models.CharField(max_length=255, null=True, blank=True)
     transcribation = models.TextField()
     rewriting = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
