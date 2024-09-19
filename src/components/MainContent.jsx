@@ -134,19 +134,17 @@ export default function MainContent() {
           console.warn("Authorization Token not found.");
         }
 
+        const apiurl = "http://127.0.0.1:8000/api/process_video/";
         // Send POST request to the API with CSRF token and Authorization token
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/process_video/",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": csrfToken, // Include CSRF token in the headers
-              Authorization: `Value ${authToken}`, // Include Authorization token if present
-            },
-            body: JSON.stringify({ video_url: url }), // Send URL as a string
-          }
-        );
+        const response = await fetch(apiurl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken, // Include CSRF token in the headers
+            Authorization: `Value ${authToken}`, // Include Authorization token if present
+          },
+          body: JSON.stringify({ video_url: url }), // Send URL as a string
+        });
 
         if (response.ok) {
           const data = await response.json();
