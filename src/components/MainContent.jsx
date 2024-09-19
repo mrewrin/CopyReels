@@ -128,17 +128,21 @@ export default function MainContent() {
 
         // Get authorization token from localStorage
         const authToken = localStorage.getItem("token");
-        console.log("Authorization Token:", authToken);
+        if (authToken) {
+          console.log("Authorization Token found:", authToken);
+        } else {
+          console.warn("Authorization Token not found.");
+        }
 
         // Send POST request to the API with CSRF token and Authorization token
         const response = await fetch(
-          "http://127.0.0.1:8000/api/process_video",
+          "http://127.0.0.1:8000/api/process_video/",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "X-CSRFToken": csrfToken, // Include CSRF token in the headers
-              Authorization: `Token ${authToken}`, // Include Authorization token in the headers
+              Authorization: `Value ${authToken}`, // Include Authorization token if present
             },
             body: JSON.stringify({ video_url: url }), // Send URL as a string
           }
@@ -163,10 +167,8 @@ export default function MainContent() {
           setSelectedTranscription(newEntry);
           setUrl("");
         } else {
-          console.error(
-            "Ошибка при получении данных с сервера:",
-            response.statusText
-          );
+          const errorData = await response.json();
+          console.error("Ошибка при получении данных с сервера:", errorData);
         }
       } catch (error) {
         console.error("Ошибка транскрипции:", error);
@@ -294,7 +296,7 @@ export default function MainContent() {
               color="textSecondary"
               paragraph
             >
-              Cofilm лучше всего подходит для РАЗГОВОРНЫХ видео. Поддержка
+              CopyReels лучше всего подходит для РАЗГОВОРНЫХ видео. Поддержка
               видеоссылок Instagram, TikTok и YouTube shorts
             </Typography>
             <Box display="flex" justifyContent="center" mb={4} gap={2}>
