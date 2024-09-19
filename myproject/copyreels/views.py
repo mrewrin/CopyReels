@@ -145,8 +145,8 @@ def check_task_status(request, task_id):
         result_id = task_result.result
         video_result = VideoProcessResult.objects.get(id=result_id)
         return Response({
-            'transcribation': video_result.transcribation,
-            'rewriting': video_result.rewriting
+            'Transcribation': video_result.transcribation,
+            'Rewriting': video_result.rewriting
         }, status=status.HTTP_200_OK)
     elif task_result.state == 'PENDING':
         return Response({'status': 'pending'}, status=status.HTTP_202_ACCEPTED)
