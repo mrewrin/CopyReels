@@ -43,7 +43,7 @@ const App = () => {
 
   const handleLogin = async (credentials) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
+      const response = await fetch("http://176.124.212.138/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

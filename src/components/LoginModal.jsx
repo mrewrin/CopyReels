@@ -40,7 +40,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
 
     console.log("Attempting login with:", formData);
 
-    fetch("http://127.0.0.1:8000/api/login/", {
+    fetch("http://176.124.212.138/api/login/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
