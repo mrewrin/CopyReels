@@ -113,6 +113,56 @@ export default function MainContent() {
     }
   };
 
+  const checkTaskStatus = async (taskId, url) => {
+    try {
+      const apiurl = `http://176.124.212.138/api/check_task_status/${taskId}/`;
+      const intervalId = setInterval(async () => {
+        const response = await fetch(apiurl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Статус задачи:", data);
+
+          if (data.status === "completed") {
+            console.log("Задача выполнена. Получаем данные...");
+            clearInterval(intervalId);
+
+            // Обработка полученных данных
+            const newEntry = {
+              title: `Транскрипция по (${url})`,
+              url: url,
+              source: "Instagram",
+              date: new Date().toLocaleString(),
+              content: data.Transcribation, // Используем данные с сервера
+              rewriteContent: data.Rewriting,
+              wordCount: data.Transcribation.split(" ").length,
+              rewriteWordCount: data.Rewriting.split(" ").length,
+            };
+
+            handleAddToHistory(newEntry);
+            setSelectedTranscription(newEntry);
+            setUrl("");
+            setIsLoading(false);
+            setLoadingMessage(""); // Очистка сообщения о загрузке
+          } else {
+            console.log("Задача в процессе:", data.progress);
+            setLoadingMessage(`Прогресс: ${data.progress}%`); // Обновляем прогресс
+          }
+        } else {
+          const errorData = await response.json();
+          console.error("Ошибка при проверке статуса задачи:", errorData);
+        }
+      }, 5000); // Проверяем каждые 5 секунд
+    } catch (error) {
+      console.error("Ошибка при проверке статуса задачи:", error);
+    }
+  };
+
   const handleTranscription = async () => {
     if (url.trim() !== "") {
       console.log("Начало процесса транскрипции для URL:", url);
@@ -143,36 +193,25 @@ export default function MainContent() {
             "X-CSRFToken": csrfToken, // Include CSRF token in the headers
             Authorization: `Token ${authToken}`, // Include Authorization token if present
           },
-          body: JSON.stringify({ video_url: url }), // Send URL as a string
+          body: JSON.stringify({
+            video_url: url,
+            user_info: "default_user_info",
+          }), // Send URL as a string // Send URL as a string
         });
 
         if (response.ok) {
           const data = await response.json();
           console.log("Данные получены с сервера:", data);
 
-          const newEntry = {
-            title: `Транскрипция по (${url})`,
-            url: url,
-            source: "Instagram",
-            date: new Date().toLocaleString(),
-            content: data.Transcribation, // Use data from the server
-            rewriteContent: data.Rewriting,
-            wordCount: data.Transcribation.split(" ").length,
-            rewriteWordCount: data.Rewriting.split(" ").length,
-          };
-
-          handleAddToHistory(newEntry);
-          setSelectedTranscription(newEntry);
-          setUrl("");
+          // Получаем task_id
+          const taskId = data.task_id;
+          checkTaskStatus(taskId, url); // Запускаем проверку статуса задачи
         } else {
           const errorData = await response.json();
           console.error("Ошибка при получении данных с сервера:", errorData);
         }
       } catch (error) {
         console.error("Ошибка транскрипции:", error);
-      } finally {
-        setIsLoading(false);
-        setLoadingMessage(""); // Clear the loading message
       }
     }
   };
