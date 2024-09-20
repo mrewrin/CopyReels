@@ -181,7 +181,8 @@ def process_video_task(url, user_info):
         )
         logging.info(f"Результаты сохранены в базу данных с ID: {video_result.id}")
 
-        return video_result.id
+        # Возвращаем сам результат (словарь), если это требуется для дальнейшего использования
+        return result
     else:
         logging.error("Ошибка при скачивании аудио или его обработке.")
 
