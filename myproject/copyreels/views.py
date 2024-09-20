@@ -142,18 +142,23 @@ def process_video(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def check_task_status(request, task_id):
+    logger.info(f"Проверка статуса задачи с ID: {task_id}")
     task_result = process_video_task.AsyncResult(task_id)
     if task_result.state == 'SUCCESS':
         result_id = task_result.result
         video_result = VideoProcessResult.objects.get(id=result_id)
+        logger.info(f"Задача {task_id} успешно завершена.")
         return Response({
             'Transcribation': video_result.transcribation,
             'Rewriting': video_result.rewriting
         }, status=status.HTTP_200_OK)
     elif task_result.state == 'PENDING':
+        logger.info(f"Задача {task_id} в процессе выполнения.")
         return Response({'status': 'pending'}, status=status.HTTP_202_ACCEPTED)
     elif task_result.state == 'FAILURE':
-        logger.error(f"Task {task_id} failed: {task_result.info}")
+        logger.error(f"Задача {task_id} завершилась с ошибкой: {task_result.info}")
         return Response({'status': 'failed', 'error': str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
+        logger.info(f"Неизвестное состояние задачи {task_id}: {task_result.state}")
         return Response({'status': task_result.state}, status=status.HTTP_200_OK)
+

@@ -222,25 +222,32 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'INFO',  # Set the console handler to show info-level logs
+            'level': 'INFO',  # Логирование в консоль
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/copyreels/debug.log',  # Путь к файлу логов
+            'level': 'INFO',
         },
     },
     'root': {
-        'handlers': ['console'],
-        'level': 'INFO',  # Set the root logger to INFO level
+        'handlers': ['console', 'file'],  # Логирование и в консоль, и в файл
+        'level': 'INFO',
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': 'INFO',  # Set the Django logger to INFO level
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
         },
-        'copyreels': {  # Your app name
-            'handlers': ['console'],
-            'level': 'INFO',  # Set your app logger to INFO level
+        'copyreels': {  # Ваше приложение
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
 
 # ------------------------------------------------
 # Настройки CORS
