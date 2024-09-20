@@ -139,6 +139,7 @@ def process_video(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def check_task_status(request, task_id):
     task_result = process_video_task.AsyncResult(task_id)
     if task_result.state == 'SUCCESS':
