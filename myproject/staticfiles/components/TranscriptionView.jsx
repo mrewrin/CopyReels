@@ -14,6 +14,11 @@ import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import SendIcon from "@mui/icons-material/Send";
 
 const TranscriptionView = ({ transcription, onBack }) => {
+  // Функция для подсчета количества слов
+  const countWords = (text) => {
+    return text ? text.split(/\s+/).filter(Boolean).length : 0;
+  };
+
   return (
     <Box
       display="flex"
@@ -84,7 +89,7 @@ const TranscriptionView = ({ transcription, onBack }) => {
         </Typography>
         <Grid container justifyContent="space-between">
           <Typography variant="body2" color="textSecondary">
-            {`${transcription.wordCount || "неизвестно"} слов`}
+            {`${countWords(transcription.content)} слов`}
           </Typography>
           <IconButton
             onClick={() => navigator.clipboard.writeText(transcription.content)}
@@ -117,13 +122,12 @@ const TranscriptionView = ({ transcription, onBack }) => {
             overflowY: "auto",
           }}
         >
-          {/* Пример рерайтинга */}
           {transcription.rewriteContent ||
             "Текст после рерайтинга будет отображаться здесь."}
         </Typography>
         <Grid container justifyContent="space-between">
           <Typography variant="body2" color="textSecondary">
-            {`${transcription.rewriteWordCount || "неизвестно"} слов`}
+            {`${countWords(transcription.rewriteContent)} слов`}
           </Typography>
           <IconButton
             onClick={() =>
