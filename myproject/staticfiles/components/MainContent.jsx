@@ -26,7 +26,6 @@ function getCookie(name) {
     const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
       if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
@@ -48,7 +47,6 @@ export default function MainContent() {
   const [loadingMessage, setLoadingMessage] = useState("");
 
   useEffect(() => {
-    console.log("Загрузка сохраненной истории и избранного из localStorage...");
     const savedHistory = JSON.parse(localStorage.getItem("history")) || [];
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setHistory(savedHistory);
@@ -56,19 +54,16 @@ export default function MainContent() {
   }, []);
 
   const updateLocalStorage = (key, value) => {
-    console.log(`Обновление localStorage для ключа ${key}...`);
     localStorage.setItem(key, JSON.stringify(value));
   };
 
   const handleAddToHistory = (newEntry) => {
-    console.log("Добавление новой записи в историю:", newEntry);
     const updatedHistory = [newEntry, ...history];
     setHistory(updatedHistory);
     updateLocalStorage("history", updatedHistory);
   };
 
   const handleAddToFavorites = (entry) => {
-    console.log("Добавление/удаление записи в избранное:", entry);
     if (favorites.includes(entry)) {
       const updatedFavorites = favorites.filter((item) => item !== entry);
       setFavorites(updatedFavorites);
@@ -81,32 +76,27 @@ export default function MainContent() {
   };
 
   const handleOpenDialog = (entry) => {
-    console.log("Открытие диалога для удаления записи:", entry);
     setDeleteEntry(entry);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
-    console.log("Закрытие диалога удаления.");
     setOpenDialog(false);
     setDeleteEntry(null);
   };
 
   const handleConfirmDelete = () => {
-    console.log("Подтверждение удаления записи:", deleteEntry);
     handleRemoveFromHistory(deleteEntry);
     setOpenDialog(false);
     setDeleteEntry(null);
   };
 
   const handleRemoveFromHistory = (entry) => {
-    console.log("Удаление записи из истории:", entry);
     const updatedHistory = history.filter((item) => item !== entry);
     setHistory(updatedHistory);
     updateLocalStorage("history", updatedHistory);
 
     if (favorites.includes(entry)) {
-      console.log("Удаление записи из избранного:", entry);
       const updatedFavorites = favorites.filter((item) => item !== entry);
       setFavorites(updatedFavorites);
       updateLocalStorage("favorites", updatedFavorites);
@@ -116,29 +106,29 @@ export default function MainContent() {
   const checkTaskStatus = async (taskId, url) => {
     try {
       const apiurl = `http://176.124.212.138/api/check_task_status/${taskId}/`;
+      const token = localStorage.getItem("token");
+      const csrfToken = getCookie("csrftoken");
       const intervalId = setInterval(async () => {
         const response = await fetch(apiurl, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+            Authorization: `Token ${token}`,
           },
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Статус задачи:", data);
-
           if (data.status === "completed") {
-            console.log("Задача выполнена. Получаем данные...");
             clearInterval(intervalId);
 
-            // Обработка полученных данных
             const newEntry = {
               title: `Транскрипция по (${url})`,
               url: url,
               source: "Instagram",
               date: new Date().toLocaleString(),
-              content: data.Transcribation, // Используем данные с сервера
+              content: data.Transcribation,
               rewriteContent: data.Rewriting,
               wordCount: data.Transcribation.split(" ").length,
               rewriteWordCount: data.Rewriting.split(" ").length,
@@ -148,16 +138,15 @@ export default function MainContent() {
             setSelectedTranscription(newEntry);
             setUrl("");
             setIsLoading(false);
-            setLoadingMessage(""); // Очистка сообщения о загрузке
+            setLoadingMessage("");
           } else {
-            console.log("Задача в процессе:", data.progress);
-            setLoadingMessage(`Прогресс: ${data.progress}%`); // Обновляем прогресс
+            setLoadingMessage(`Прогресс: ${data.progress}%`);
           }
         } else {
           const errorData = await response.json();
           console.error("Ошибка при проверке статуса задачи:", errorData);
         }
-      }, 5000); // Проверяем каждые 5 секунд
+      }, 5000); // Интервал 5 секунд
     } catch (error) {
       console.error("Ошибка при проверке статуса задачи:", error);
     }
@@ -165,47 +154,32 @@ export default function MainContent() {
 
   const handleTranscription = async () => {
     if (url.trim() !== "") {
-      console.log("Начало процесса транскрипции для URL:", url);
       setIsLoading(true);
-      setLoadingMessage(
-        "Происходит магия, ожидайте, это займет около 40 секунд..."
-      );
+      setLoadingMessage("Происходит магия, ожидайте...");
 
       try {
-        // Get CSRF token from cookies
         const csrfToken = getCookie("csrftoken");
-        console.log("CSRF Token:", csrfToken);
-
-        // Get authorization token from localStorage
         const authToken = localStorage.getItem("token");
-        if (authToken) {
-          console.log("Authorization Token found:", authToken);
-        } else {
-          console.warn("Authorization Token not found.");
-        }
-
         const apiurl = "http://176.124.212.138/api/process_video/";
-        // Send POST request to the API with CSRF token and Authorization token
+
         const response = await fetch(apiurl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken, // Include CSRF token in the headers
-            Authorization: `Token ${authToken}`, // Include Authorization token if present
+            "X-CSRFToken": csrfToken,
+            Authorization: `Token ${authToken}`,
           },
           body: JSON.stringify({
             video_url: url,
             user_info: "default_user_info",
-          }), // Send URL as a string // Send URL as a string
+          }),
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Данные получены с сервера:", data);
-
-          // Получаем task_id
           const taskId = data.task_id;
-          checkTaskStatus(taskId, url); // Запускаем проверку статуса задачи
+
+          checkTaskStatus(taskId, url);
         } else {
           const errorData = await response.json();
           console.error("Ошибка при получении данных с сервера:", errorData);
@@ -218,7 +192,6 @@ export default function MainContent() {
 
   const renderContent = () => {
     if (selectedTranscription) {
-      console.log("Отображение выбранной транскрипции:", selectedTranscription);
       return (
         <TranscriptionView
           transcription={selectedTranscription}
@@ -233,8 +206,6 @@ export default function MainContent() {
         : activeContent === "instagram"
         ? history.filter((entry) => entry.source === "Instagram")
         : history;
-
-    console.log("Отображение контента для:", activeContent);
 
     if (contentToRender.length === 0) {
       return (
@@ -262,10 +233,7 @@ export default function MainContent() {
             item
             xs={12}
             md={6}
-            onClick={() => {
-              console.log("Выбрана транскрипция:", entry);
-              setSelectedTranscription(entry);
-            }}
+            onClick={() => setSelectedTranscription(entry)}
             style={{ cursor: "pointer" }}
           >
             <Typography variant="subtitle2" color="textSecondary">
@@ -315,7 +283,6 @@ export default function MainContent() {
     <Box
       display="flex"
       justifyContent="center"
-      alignItems=""
       minHeight="100vh"
       marginTop={5}
       marginLeft={0}
@@ -379,16 +346,12 @@ export default function MainContent() {
                     backgroundColor: url.trim() ? "#8e44ad" : "#e0e0e0",
                   },
                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  textTransform: "none",
                 }}
               >
                 Транскрибировать
               </Button>
             </Box>
 
-            {/* Кастомный круговой прогресс-бар */}
             {isLoading && (
               <Box
                 mt={2}
@@ -410,7 +373,6 @@ export default function MainContent() {
               </Box>
             )}
 
-            {/* Кнопки и контент */}
             <Box>
               <Typography variant="h6" gutterBottom>
                 История
@@ -427,18 +389,6 @@ export default function MainContent() {
                     color: activeContent === "all" ? "#9b59b6" : "#6c757d",
                     borderColor:
                       activeContent === "all" ? "#9b59b6" : "#ced4da",
-                    boxShadow:
-                      activeContent === "all"
-                        ? "0 0 4px rgba(155, 89, 182, 0.3)"
-                        : "none",
-                    "&:hover": {
-                      backgroundColor:
-                        activeContent === "all" ? "#f6f7fb" : "#f8f9fa",
-                      borderColor: "#9b59b6",
-                    },
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
                   }}
                 >
                   Все
@@ -455,18 +405,6 @@ export default function MainContent() {
                       activeContent === "favorites" ? "#9b59b6" : "#6c757d",
                     borderColor:
                       activeContent === "favorites" ? "#9b59b6" : "#ced4da",
-                    boxShadow:
-                      activeContent === "favorites"
-                        ? "0 0 4px rgba(155, 89, 182, 0.3)"
-                        : "none",
-                    "&:hover": {
-                      backgroundColor:
-                        activeContent === "favorites" ? "#f6f7fb" : "#f8f9fa",
-                      borderColor: "#9b59b6",
-                    },
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
                   }}
                 >
                   <FavoriteIcon style={{ color: "#9b59b6" }} />
@@ -484,18 +422,6 @@ export default function MainContent() {
                       activeContent === "instagram" ? "#9b59b6" : "#6c757d",
                     borderColor:
                       activeContent === "instagram" ? "#9b59b6" : "#ced4da",
-                    boxShadow:
-                      activeContent === "instagram"
-                        ? "0 0 4px rgba(155, 89, 182, 0.3)"
-                        : "none",
-                    "&:hover": {
-                      backgroundColor:
-                        activeContent === "instagram" ? "#f6f7fb" : "#f8f9fa",
-                      borderColor: "#9b59b6",
-                    },
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
                   }}
                 >
                   <InstagramIcon style={{ color: "#E4405F" }} />
@@ -503,7 +429,6 @@ export default function MainContent() {
                 </Button>
               </Box>
 
-              {/* Динамический контент */}
               <Box
                 p={2}
                 sx={{ backgroundColor: "#fff", borderRadius: 2, boxShadow: 2 }}
@@ -520,7 +445,6 @@ export default function MainContent() {
           />
         )}
 
-        {/* Диалог подтверждения удаления */}
         <Dialog
           open={openDialog}
           onClose={handleCloseDialog}
@@ -548,9 +472,6 @@ export default function MainContent() {
                 backgroundColor: "#e0e0e0",
                 color: "#6c757d",
                 borderRadius: "10px",
-                "&:hover": {
-                  backgroundColor: "#d4d4d4",
-                },
               }}
             >
               Отмена
@@ -561,9 +482,6 @@ export default function MainContent() {
                 backgroundColor: "#9b59b6",
                 color: "#fff",
                 borderRadius: "10px",
-                "&:hover": {
-                  backgroundColor: "#8e44ad",
-                },
               }}
             >
               Удалить
