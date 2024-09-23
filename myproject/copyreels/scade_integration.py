@@ -49,23 +49,19 @@ instagram_cookies_path = "/var/www/CopyReels/myproject/copyreels/www.instagram.c
 
 # Путь к файлам cookies для YouTube и Instagram
 COOKIES_FILES = {
-    'youtube': youtube_cookies_path,  # путь к файлу cookies для YouTube
-    'instagram': instagram_cookies_path ,  # путь к файлу cookies для Instagram
+    'youtube': '/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt',  # Укажи путь к файлу cookies для YouTube
+    'instagram': '/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt',  # Укажи путь к файлу cookies для Instagram
 }
-
 
 def download_audio(url, output_folder='audio_files', proxy=None, throttled_rate='100K', browser='chrome'):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
 
-    # Создаем папку, если она не существует
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # Получаем текущую дату и время для уникального имени файла
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_file = os.path.join(output_folder, f'audio_{timestamp}')
 
-    # Определяем сервис (YouTube или Instagram) по URL
     if 'youtube.com' in url or 'youtu.be' in url:
         service = 'youtube'
     elif 'instagram.com' in url:
@@ -74,10 +70,16 @@ def download_audio(url, output_folder='audio_files', proxy=None, throttled_rate=
         logging.error(f"Не поддерживаемый сервис для URL: {url}")
         return
 
-    # Получаем user-agent для выбранного браузера
-    user_agent = USER_AGENTS.get(browser, USER_AGENTS['chrome'])  # По умолчанию - Chrome
+    user_agent = USER_AGENTS.get(browser, USER_AGENTS['chrome'])
 
-    # Настройки для извлечения только аудио с использованием cookies
+    # Проверка существования файла cookies перед передачей
+    cookies_path = COOKIES_FILES.get(service)
+    if not os.path.exists(cookies_path):
+        logging.error(f"Файл cookies не найден по пути: {cookies_path}")
+        return
+    logging.info(f"Использование файла cookies: {cookies_path}")
+
+    # Добавьте заголовки в ydl_opts
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_file + '.%(ext)s',
@@ -86,21 +88,25 @@ def download_audio(url, output_folder='audio_files', proxy=None, throttled_rate=
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
-        'noplaylist': True,  # Отключить скачивание плейлистов
-        'cookies': COOKIES_FILES[service],  # Используем файл cookies для авторизации
-        'proxy': proxy,  # Прокси для обхода ограничений
-        'throttled-rate': throttled_rate,  # Ограничение скорости
-        'user-agent': user_agent,  # Устанавливаем User-Agent для выбранного браузера
-        'nocheckcertificate': True,  # Игнорировать ошибки сертификатов
-        'sleep-interval': 5,  # Добавляем задержку между запросами
-        'max-sleep-interval': 10,  # Максимальная задержка
+        'noplaylist': True,
+        'cookies': cookies_path,
+        'proxy': proxy,
+        'throttled-rate': throttled_rate,
+        'user-agent': user_agent,
+        'nocheckcertificate': True,
+        'sleep-interval': 5,
+        'max-sleep-interval': 10,
+        'http_headers': {
+            'User-Agent': user_agent,
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        },
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        # Проверка на существование файла и получение полного пути
         output_file_with_ext = output_file + '.mp3'
         if os.path.exists(output_file_with_ext):
             logging.info(f'Аудио успешно извлечено и сохранено как {output_file_with_ext}')
