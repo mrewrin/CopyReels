@@ -42,10 +42,15 @@ USER_AGENTS = {
     'firefox': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
 }
 
+
+youtube_cookies_path = "/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt"
+instagram_cookies_path = "/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt" 
+
+
 # Путь к файлам cookies для YouTube и Instagram
 COOKIES_FILES = {
-    'youtube': 'path/to/youtube_cookies.txt',  # Укажи путь к файлу cookies для YouTube
-    'instagram': 'path/to/instagram_cookies.txt',  # Укажи путь к файлу cookies для Instagram
+    'youtube': youtube_cookies_path,  # путь к файлу cookies для YouTube
+    'instagram': instagram_cookies_path ,  # путь к файлу cookies для Instagram
 }
 
 
