@@ -151,7 +151,8 @@ def check_task_status(request, task_id):
         logger.info(f"Задача {task_id} успешно завершена.")
         return Response({
             'Transcribation': result.get('Transcribation', ''),
-            'Rewriting': result.get('Rewriting', '')
+            'Rewriting': result.get('Rewriting', ''),
+            'status': 'completed'
         }, status=status.HTTP_200_OK)
 
     elif task_result.state == 'PENDING':
