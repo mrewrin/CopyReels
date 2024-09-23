@@ -36,8 +36,22 @@ def upload_to_file_io(file_path):
     return None
 
 
-def download_audio(url, output_folder='audio_files'):
+# Список user-agent для различных браузеров
+USER_AGENTS = {
+    'chrome': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'firefox': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+}
+
+# Путь к файлам cookies для YouTube и Instagram
+COOKIES_FILES = {
+    'youtube': 'path/to/youtube_cookies.txt',  # Укажи путь к файлу cookies для YouTube
+    'instagram': 'path/to/instagram_cookies.txt',  # Укажи путь к файлу cookies для Instagram
+}
+
+
+def download_audio(url, output_folder='audio_files', proxy=None, throttled_rate='100K', browser='chrome'):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
+
     # Создаем папку, если она не существует
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -46,7 +60,19 @@ def download_audio(url, output_folder='audio_files'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_file = os.path.join(output_folder, f'audio_{timestamp}')
 
-    # Настройки для извлечения только аудио
+    # Определяем сервис (YouTube или Instagram) по URL
+    if 'youtube.com' in url or 'youtu.be' in url:
+        service = 'youtube'
+    elif 'instagram.com' in url:
+        service = 'instagram'
+    else:
+        logging.error(f"Не поддерживаемый сервис для URL: {url}")
+        return
+
+    # Получаем user-agent для выбранного браузера
+    user_agent = USER_AGENTS.get(browser, USER_AGENTS['chrome'])  # По умолчанию - Chrome
+
+    # Настройки для извлечения только аудио с использованием cookies
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_file + '.%(ext)s',
@@ -55,7 +81,14 @@ def download_audio(url, output_folder='audio_files'):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
-        'noplaylist': True,  # Отключить скачивание плейлистов, если URL указывает на плейлист
+        'noplaylist': True,  # Отключить скачивание плейлистов
+        'cookies': COOKIES_FILES[service],  # Используем файл cookies для авторизации
+        'proxy': proxy,  # Прокси для обхода ограничений
+        'throttled-rate': throttled_rate,  # Ограничение скорости
+        'user-agent': user_agent,  # Устанавливаем User-Agent для выбранного браузера
+        'nocheckcertificate': True,  # Игнорировать ошибки сертификатов
+        'sleep-interval': 5,  # Добавляем задержку между запросами
+        'max-sleep-interval': 10,  # Максимальная задержка
     }
 
     try:
@@ -66,29 +99,10 @@ def download_audio(url, output_folder='audio_files'):
         output_file_with_ext = output_file + '.mp3'
         if os.path.exists(output_file_with_ext):
             logging.info(f'Аудио успешно извлечено и сохранено как {output_file_with_ext}')
-
-            # Загрузка аудиофайла на File.io
-            file_url = upload_to_file_io(output_file_with_ext)
-            if file_url:
-                logging.info(f'Файл успешно загружен на file.io: {file_url}')
-
-                # Отправка ссылки на аудиофайл в Scade
-                task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, file_url)
-                if task_id:
-                    # Получение результата от Scade
-                    result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
-                    logging.info(f'Результат Scade: {result}')
-                    if result:
-                        return {'Transcribation': result['Transcribation'], 'Rewriting': result['Rewriting']}
-                    return None
-                else:
-                    logging.error('Ошибка при запуске флоу на Scade.')
-            else:
-                logging.error('Ошибка при загрузке файла на file.io.')
         else:
-            logging.error(f'Ошибка: Файл {output_file_with_ext} не найден.')
+            logging.error(f'Не удалось сохранить аудио файл: {output_file_with_ext}')
     except Exception as e:
-        logging.error(f'Ошибка при извлечении аудио: {e}')
+        logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
 
 
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
@@ -185,6 +199,4 @@ def process_video_task(url, user_info):
         return result
     else:
         logging.error("Ошибка при скачивании аудио или его обработке.")
-
     return None
-
