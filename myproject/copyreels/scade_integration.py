@@ -74,6 +74,7 @@ def download_audio(url, output_folder='audio_files', proxy=None, throttled_rate=
         return
     logging.info(f"Использование файла cookies: {cookies_path}")
 
+    # Добавьте заголовки в ydl_opts
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_file + '.%(ext)s',
@@ -83,13 +84,18 @@ def download_audio(url, output_folder='audio_files', proxy=None, throttled_rate=
             'preferredquality': '192',
         }],
         'noplaylist': True,
-        'cookies': cookies_path,  # Здесь используется путь к cookies
+        'cookies': cookies_path,
         'proxy': proxy,
         'throttled-rate': throttled_rate,
         'user-agent': user_agent,
         'nocheckcertificate': True,
         'sleep-interval': 5,
         'max-sleep-interval': 10,
+        'http_headers': {
+            'User-Agent': user_agent,
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        },
     }
 
     try:
