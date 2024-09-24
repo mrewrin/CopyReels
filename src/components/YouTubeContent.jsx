@@ -1,21 +1,12 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  IconButton,
-  Grid,
-} from "@mui/material";
+import { Box, Typography, TextField, Button, IconButton } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
-import ScheduleIcon from "@mui/icons-material/Schedule";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const YouTubeContent = () => {
   const [url, setUrl] = useState("");
-  const [language, setLanguage] = useState("Русский (Ru)");
   const [history, setHistory] = useState([]);
 
   const handleSummarize = () => {
@@ -33,14 +24,13 @@ const YouTubeContent = () => {
   };
 
   return (
-    <Box
-      sx={{
-        p: 4,
-      }}
-    >
+    <Box sx={{ p: 4 }}>
       {/* Заголовок */}
       <Box textAlign="center" sx={{ mb: 4 }}>
-        <Typography variant="h5" sx={{ mb: 1, fontWeight: 500, color: "#333" }}>
+        <Typography
+          variant="h4"
+          sx={{ mb: 1, fontWeight: 500, color: "#4044e3" }}
+        >
           Обзор YouTube с ChatGPT онлайн и бесплатно
         </Typography>
         <Typography variant="subtitle2" color="textSecondary">
@@ -66,10 +56,10 @@ const YouTubeContent = () => {
                 borderColor: "#ddd",
               },
               "&:hover fieldset": {
-                borderColor: "#8e44ad",
+                borderColor: "#4044e3",
               },
               "&.Mui-focused fieldset": {
-                borderColor: "#8e44ad",
+                borderColor: "#4044e3",
               },
             },
           }}
@@ -77,11 +67,11 @@ const YouTubeContent = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#6c63ff",
+            backgroundColor: "#4044e3",
             color: "#fff",
             borderRadius: "16px",
             "&:hover": {
-              backgroundColor: "#5752d4",
+              backgroundColor: "#303c9a",
             },
           }}
           onClick={handleSummarize}
@@ -91,36 +81,22 @@ const YouTubeContent = () => {
       </Box>
 
       {/* Блоки для опций */}
-      <Box sx={{ display: "flex", justifyContent: "", mb: 7 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 7 }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <ArrowForwardIcon sx={{ color: "#8e44ad", mr: 1 }} />
-          <Typography
-            variant="body1"
-            sx={{ color: "#333", fontWeight: 500, textAlign: "center" }}
-          >
+          <ArrowForwardIcon sx={{ color: "#4044e3", mr: 1 }} />
+          <Typography variant="body1" sx={{ color: "#333", fontWeight: 500 }}>
             Веб-страница и резюме YouTube
           </Typography>
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <VideoLibraryIcon sx={{ color: "#8e44ad", mr: 1 }} />
-          <Typography
-            variant="body1"
-            sx={{ color: "#333", fontWeight: 500, textAlign: "center" }}
-          >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <VideoLibraryIcon sx={{ color: "#4044e3", mr: 1 }} />
+          <Typography variant="body1" sx={{ color: "#333", fontWeight: 500 }}>
             Краткое содержание видео YouTube во время просмотра
           </Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <MonetizationOnIcon sx={{ color: "#8e44ad", mr: 1 }} />
-          <Typography
-            variant="body1"
-            sx={{ color: "#333", fontWeight: 500, textAlign: "center" }}
-          >
+          <MonetizationOnIcon sx={{ color: "#4044e3", mr: 1 }} />
+          <Typography variant="body1" sx={{ color: "#333", fontWeight: 500 }}>
             Ежедневное бесплатное использование ChatGPT
           </Typography>
         </Box>
@@ -134,7 +110,6 @@ const YouTubeContent = () => {
           borderRadius: "16px",
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
           textAlign: "center",
-
           maxWidth: "500px",
           margin: "0 auto",
           mb: 4,
@@ -150,11 +125,11 @@ const YouTubeContent = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#6c63ff",
+            backgroundColor: "#4044e3",
             color: "#fff",
             borderRadius: "16px",
             "&:hover": {
-              backgroundColor: "#5752d4",
+              backgroundColor: "#303c9a",
             },
           }}
         >
@@ -163,7 +138,7 @@ const YouTubeContent = () => {
       </Box>
 
       {/* История */}
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography variant="h6" sx={{ mb: 2, color: "#4044e3" }}>
         История
       </Typography>
       <Box
@@ -188,13 +163,15 @@ const YouTubeContent = () => {
               sx={{ cursor: "pointer", mb: 1 }}
             >
               <Box>
-                <Typography variant="body1">{entry.url}</Typography>
+                <Typography variant="body1" color="#4044e3">
+                  {entry.url}
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
                   {entry.date}
                 </Typography>
               </Box>
               <IconButton onClick={() => handleDelete(index)}>
-                <DeleteIcon />
+                <DeleteIcon sx={{ color: "#4044e3" }} />
               </IconButton>
             </Box>
           ))

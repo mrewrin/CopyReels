@@ -23,22 +23,22 @@ const TranscriptionView = ({ transcription, onBack }) => {
     <Box
       display="flex"
       flexDirection="column"
-      alignItems=""
-      justifyContent=""
       minHeight="100vh"
       p={4}
       sx={{
-        backgroundColor: "#fff",
-        borderRadius: 2,
+        backgroundColor: "#f4f6f8",
+        borderRadius: "16px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       }}
     >
+      {/* Верхняя панель с кнопкой "Назад" и URL видео */}
       <Box display="flex" justifyContent="space-between" width="100%" mb={2}>
         <Button
           startIcon={<ArrowBackIcon />}
           variant="text"
           onClick={onBack}
           sx={{
-            color: "#8e44ad",
+            color: "#4044e3",
             textTransform: "none",
             fontSize: "0.875rem",
             minWidth: "auto",
@@ -56,24 +56,26 @@ const TranscriptionView = ({ transcription, onBack }) => {
           sx={{
             ml: 2,
             "& .MuiOutlinedInput-root": {
-              borderRadius: "8px",
+              borderRadius: "16px",
+              backgroundColor: "#fff",
             },
           }}
         />
       </Box>
 
-      {/* Блок для Транскрипт */}
+      {/* Блок для Транскрипта */}
       <Box
         sx={{
-          borderRadius: "12px",
+          borderRadius: "16px",
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
           p: 4,
           width: "100%",
           maxWidth: "1000px",
           mb: 4,
+          backgroundColor: "#fff",
         }}
       >
-        <Typography variant="h6" mb={2}>
+        <Typography variant="h6" sx={{ color: "#4044e3", mb: 2 }}>
           Транскрипт
         </Typography>
         <Typography
@@ -83,6 +85,8 @@ const TranscriptionView = ({ transcription, onBack }) => {
             mb: 2,
             maxHeight: "300px",
             overflowY: "auto",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "12px",
           }}
         >
           {transcription.content}
@@ -94,23 +98,24 @@ const TranscriptionView = ({ transcription, onBack }) => {
           <IconButton
             onClick={() => navigator.clipboard.writeText(transcription.content)}
           >
-            <FileCopyIcon />
+            <FileCopyIcon sx={{ color: "#4044e3" }} />
           </IconButton>
         </Grid>
       </Box>
 
-      {/* Блок для Рерайтинг */}
+      {/* Блок для Рерайтинга */}
       <Box
         sx={{
-          borderRadius: "12px",
+          borderRadius: "16px",
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
           p: 4,
           width: "100%",
           maxWidth: "1000px",
           mb: 4,
+          backgroundColor: "#fff",
         }}
       >
-        <Typography variant="h6" mb={2}>
+        <Typography variant="h6" sx={{ color: "#4044e3", mb: 2 }}>
           Рерайтинг
         </Typography>
         <Typography
@@ -120,6 +125,8 @@ const TranscriptionView = ({ transcription, onBack }) => {
             mb: 2,
             maxHeight: "300px",
             overflowY: "auto",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "12px",
           }}
         >
           {transcription.rewriteContent ||
@@ -134,10 +141,12 @@ const TranscriptionView = ({ transcription, onBack }) => {
               navigator.clipboard.writeText(transcription.rewriteContent || "")
             }
           >
-            <FileCopyIcon />
+            <FileCopyIcon sx={{ color: "#4044e3" }} />
           </IconButton>
         </Grid>
       </Box>
+
+      {/* Блоки "Как это работает?" и "Upgrade" */}
       <Box
         display="flex"
         flexDirection="column"
@@ -154,7 +163,7 @@ const TranscriptionView = ({ transcription, onBack }) => {
           p={2}
           sx={{
             backgroundColor: "#f5f0ff",
-            borderRadius: "12px",
+            borderRadius: "16px",
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
             mb: 2,
           }}
@@ -185,7 +194,7 @@ const TranscriptionView = ({ transcription, onBack }) => {
           p={1}
           sx={{
             backgroundColor: "#fff",
-            borderRadius: "12px",
+            borderRadius: "16px",
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           }}
         >
@@ -195,7 +204,8 @@ const TranscriptionView = ({ transcription, onBack }) => {
             variant="outlined"
             sx={{
               "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
+                borderRadius: "16px",
+                backgroundColor: "#f9f9f9",
                 "& fieldset": {
                   borderColor: "transparent",
                 },

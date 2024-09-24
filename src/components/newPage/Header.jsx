@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -15,8 +15,9 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
-const Header = ({ openLoginModal, openRegisterModal }) => {
+const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -30,85 +31,80 @@ const Header = ({ openLoginModal, openRegisterModal }) => {
 
   return (
     <AppBar
-      position="static"
+      position="fixed"
       elevation={0}
       sx={{
-        backgroundColor: "#fff", // Бледный фон для современного вида
-        color: "#000",
+        backgroundColor: "#f9fafb",
+        color: "#1f2937",
+        borderRadius: "0 0 20px 20px",
+        boxShadow: "none",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar sx={{ justifyContent: "space-between", padding: "0 16px" }}>
         <Typography
           variant="h6"
           component={Link}
           to="/"
           sx={{
             textDecoration: "none",
-            color: "inherit",
-            fontWeight: 600,
+            color: "#1f2937",
+            fontWeight: 700,
+            fontSize: "24px",
             transition: "color 0.3s",
-            "&:hover": {
-              color: "#9b59b6", // Легкое изменение цвета при наведении
-            },
+            "&:hover": { color: "#6366f1" },
           }}
         >
           CopyReels
         </Typography>
+
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
           <Button
-            component={Link}
-            to="/about"
-            color="inherit"
+            onClick={() => navigate("/about")}
             sx={{
-              borderRadius: "20px",
-              padding: "8px 16px",
+              borderRadius: "50px",
+              padding: "10px 20px",
               textTransform: "none",
-              transition: "background-color 0.3s",
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
+              color: "#1f2937",
+              backgroundColor: "#f3f4f6",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+              transition: "background-color 0.3s, box-shadow 0.3s",
+              "&:hover": { backgroundColor: "#e0f2fe" },
             }}
           >
             About
           </Button>
           <Button
-            color="primary"
-            variant="outlined"
-            onClick={openLoginModal}
+            onClick={() => navigate("/login")}
             sx={{
-              borderRadius: "20px",
-              padding: "8px 16px",
+              borderRadius: "50px",
+              padding: "10px 20px",
               textTransform: "none",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              color: "#1f2937",
+              backgroundColor: "#f3f4f6",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
               transition: "background-color 0.3s, box-shadow 0.3s",
-              "&:hover": {
-                backgroundColor: "#e0e0e0",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-              },
+              "&:hover": { backgroundColor: "#e0f2fe" },
             }}
           >
-            Login
+            Войти
           </Button>
           <Button
-            color="primary"
-            variant="contained"
-            onClick={openRegisterModal}
+            onClick={() => navigate("/register")}
             sx={{
-              borderRadius: "20px",
-              padding: "8px 16px",
+              borderRadius: "50px",
+              padding: "10px 20px",
               textTransform: "none",
-              backgroundColor: "#9b59b6",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#6366f1",
+              color: "#fff",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
               transition: "background-color 0.3s, box-shadow 0.3s",
-              "&:hover": {
-                backgroundColor: "#8e44ad",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-              },
+              "&:hover": { backgroundColor: "#4f46e5" },
             }}
           >
-            Register
+            Регистрация
           </Button>
         </Box>
+
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
           <IconButton
             edge="start"
@@ -117,35 +113,33 @@ const Header = ({ openLoginModal, openRegisterModal }) => {
             onClick={toggleDrawer(true)}
             sx={{
               backgroundColor: "#fff",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-              transition: "background-color 0.3s",
-              "&:hover": {
-                backgroundColor: "#e0e0e0",
-              },
+              borderRadius: "50%",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+              "&:hover": { backgroundColor: "#e0f2fe" },
             }}
           >
             <MenuIcon />
           </IconButton>
         </Box>
       </Toolbar>
-      {/* Drawer для мобильного меню */}
+
       <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
         <Box
-          sx={{ width: 250, paddingTop: 2 }}
+          sx={{ width: 250, padding: "16px" }}
           role="presentation"
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
           <List>
             <ListItem button component={Link} to="/about">
-              <ListItemText primary="About" />
+              <ListItemText primary="О нас" />
             </ListItem>
             <Divider />
-            <ListItem button onClick={openLoginModal}>
-              <ListItemText primary="Login" />
+            <ListItem button onClick={() => navigate("/login")}>
+              <ListItemText primary="Войти" />
             </ListItem>
-            <ListItem button onClick={openRegisterModal}>
-              <ListItemText primary="Register" />
+            <ListItem button onClick={() => navigate("/register")}>
+              <ListItemText primary="Регистрация" />
             </ListItem>
           </List>
         </Box>

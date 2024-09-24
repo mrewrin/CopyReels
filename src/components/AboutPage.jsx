@@ -25,7 +25,7 @@ const About = () => {
 
   return (
     <div className="h-screen">
-      <div className="h-full">
+      <div className="h-full flex">
         <Sidebar onMenuItemClick={setActiveContent} />
         <div className="flex-grow">{renderActiveContent()}</div>
       </div>

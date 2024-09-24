@@ -23,10 +23,9 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 const Sidebar = ({ onMenuItemClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeItem, setActiveItem] = useState("videoToText"); // Установили "videoToText" как активный по умолчанию
+  const [activeItem, setActiveItem] = useState("videoToText");
 
   useEffect(() => {
-    // Устанавливаем активный пункт меню на основе текущего пути
     if (location.pathname === "/about") {
       setActiveItem("videoToText");
     }
@@ -49,8 +48,9 @@ const Sidebar = ({ onMenuItemClick }) => {
       sx={{
         width: 280,
         "& .MuiDrawer-paper": {
-          border: "none", // Убираем border-right
-          boxShadow: "none", // Убираем тень, если она есть
+          border: "none",
+          boxShadow: "none",
+          backgroundColor: "#F4F7FA", // Основной фон, аналогичный главной странице
         },
       }}
     >
@@ -62,12 +62,19 @@ const Sidebar = ({ onMenuItemClick }) => {
           flexDirection: "column",
           height: "100vh",
           justifyContent: "space-between",
-          backgroundColor: "#f6f7fb",
-          borderRadius: "20px",
         }}
       >
         <Box>
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              mb: 3,
+              color: "#4044e3",
+              fontWeight: "bold",
+              fontFamily: "'Poppins', sans-serif",
+              textAlign: "center",
+            }}
+          >
             CopyReels
           </Typography>
           <List>
@@ -96,20 +103,32 @@ const Sidebar = ({ onMenuItemClick }) => {
                 sx={{
                   cursor: "pointer",
                   mb: 1,
-                  borderRadius: "20px",
+                  borderRadius: "15px", // Мягкие скругления
+                  padding: "12px 20px",
                   backgroundColor:
-                    activeItem === item.action ? "#e0e0e0" : "transparent",
+                    activeItem === item.action ? "#D6E4FF" : "transparent", // Цвет активного элемента
+                  transition: "background-color 0.3s ease",
                   "&:hover": {
-                    backgroundColor: "#e0e0e0",
+                    backgroundColor: "#E4EBFF", // Цвет при наведении
                   },
                   "& .MuiListItemIcon-root": {
-                    color: activeItem === item.action ? "#9b59b6" : "inherit",
+                    color: activeItem === item.action ? "#4044e3" : "#999",
+                    minWidth: "40px", // Делает иконки более компактными
                   },
                 }}
                 selected={activeItem === item.action}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    sx: {
+                      fontFamily: "'Roboto', sans-serif",
+                      fontSize: "0.95rem",
+                      color: activeItem === item.action ? "#4044e3" : "#666",
+                    },
+                  }}
+                />
               </ListItem>
             ))}
           </List>
@@ -118,25 +137,29 @@ const Sidebar = ({ onMenuItemClick }) => {
         <Box>
           <Box
             sx={{
-              backgroundColor: "#f6f7fb",
+              backgroundColor: "#F4F7FA",
               p: 2,
-              borderRadius: 2,
+              borderRadius: "15px",
               mb: 4,
               textAlign: "center",
-              border: "1px solid #ececec", // Добавляем границу для более минималистичного стиля
+              border: "1px solid #ECEFF1",
             }}
           >
-            <Typography variant="subtitle1">Freemium план</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+              Freemium план
+            </Typography>
             <Typography variant="body2" color="textSecondary">
               AI ограничение минут
             </Typography>
-            <Typography variant="h6">5 / 0.23</Typography>
+            <Typography variant="h6" sx={{ color: "#4044e3" }}>
+              5 / 0.23
+            </Typography>
             <LinearProgress
               variant="determinate"
               value={(0.23 / 5) * 100}
               sx={{
                 mt: 1,
-                height: 6,
+                height: 8,
                 borderRadius: 3,
                 "& .MuiLinearProgress-bar": {
                   backgroundColor: "#9b59b6",
@@ -154,12 +177,14 @@ const Sidebar = ({ onMenuItemClick }) => {
                 sx={{
                   color: "#00b2ff",
                   cursor: "pointer",
+                  fontSize: "24px",
                 }}
               />
               <EmailIcon
                 sx={{
                   color: "#ff6b6b",
                   cursor: "pointer",
+                  fontSize: "24px",
                 }}
               />
             </Box>
@@ -167,20 +192,20 @@ const Sidebar = ({ onMenuItemClick }) => {
 
           <Button
             variant="contained"
-            color="default"
             fullWidth
             onClick={handleLogout}
             sx={{
-              borderRadius: "20px", // Скругленные края
-              backgroundColor: "#f6f7fb",
-              color: "#333",
-              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+              borderRadius: "20px",
+              backgroundColor: "#4F6DFF", // Гармоничный синий цвет
+              color: "#fff",
+              padding: "12px",
+              textTransform: "none",
+              fontWeight: "bold",
+              fontSize: "0.9rem",
               "&:hover": {
-                backgroundColor: "#e0e0e0",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                backgroundColor: "#3b56cc", // Более насыщенный синий при наведении
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
               },
-              textTransform: "none", // Отключить верхний регистр
-              padding: "10px 20px", // Добавить отступы
             }}
           >
             Выйти
