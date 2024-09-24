@@ -48,65 +48,40 @@ COOKIES_FILES = {
     'instagram': '/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt',  # Укажи путь к файлу cookies для Instagram
 }
 
-def download_audio(url, output_folder='audio_files', proxy=None, throttled_rate='100K', browser='chrome'):
+
+def download_audio(url, output_folder='audio_files', throttled_rate='100K'):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    output_file = os.path.join(output_folder, f'audio_{timestamp}')
+    output_file = os.path.join(output_folder, f'audio_{timestamp}.mp3')
 
-    if 'youtube.com' in url or 'youtu.be' in url:
-        service = 'youtube'
-    elif 'instagram.com' in url:
-        service = 'instagram'
-    else:
-        logging.error(f"Не поддерживаемый сервис для URL: {url}")
-        return
-
-    user_agent = USER_AGENTS.get(browser, USER_AGENTS['chrome'])
-
-    # Проверка существования файла cookies перед передачей
-    cookies_path = COOKIES_FILES.get(service)
-    if not os.path.exists(cookies_path):
-        logging.error(f"Файл cookies не найден по пути: {cookies_path}")
-        return
-    logging.info(f"Использование файла cookies: {cookies_path}")
-
-    # Добавьте заголовки в ydl_opts
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_file + '.%(ext)s',
+        'keepvideo': False,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
         'noplaylist': True,
-        'cookies': cookies_path,
-        'proxy': proxy,
         'throttled-rate': throttled_rate,
-        'user-agent': user_agent,
         'nocheckcertificate': True,
-        'sleep-interval': 5,
-        'max-sleep-interval': 10,
-        'http_headers': {
-            'User-Agent': user_agent,
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        },
+        'cookiefrombrowser': 'chrome',  # Важно! Извлечение куков из Chrome
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36'
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        output_file_with_ext = output_file + '.mp3'
-        if os.path.exists(output_file_with_ext):
-            logging.info(f'Аудио успешно извлечено и сохранено как {output_file_with_ext}')
+        if os.path.exists(output_file):
+            logging.info(f'Аудио успешно извлечено и сохранено как {output_file}')
         else:
-            logging.error(f'Не удалось сохранить аудио файл: {output_file_with_ext}')
+            logging.error(f'Не удалось сохранить аудио файл: {output_file}')
     except Exception as e:
         logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
 
@@ -187,7 +162,8 @@ def process_video_task(url, user_info):
 
     # Этап 1: Скачивание аудио
     logging.info("Начато скачивание аудио.")
-    result = download_audio(url)
+    proxy = 'socks5://199.229.254.129:4145'
+    result = download_audio(url, proxy=proxy)
     if result:
         logging.info("Аудио успешно скачано и обработано.")
 
