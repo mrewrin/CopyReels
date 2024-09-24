@@ -22,7 +22,6 @@ import InfiniteIcon from "@mui/icons-material/AllInclusive";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TikTokIcon from "@mui/icons-material/MusicNote";
-import ExtensionIcon from "@mui/icons-material/Extension";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import EmailIcon from "@mui/icons-material/Email";
 
@@ -38,8 +37,8 @@ const SubscriptionOptions = () => {
           flexDirection: "column",
           alignItems: "flex-start",
           padding: 3,
-          background: "linear-gradient(135deg, #a987c0, #e0c5f0)",
-          borderRadius: "12px",
+          background: "linear-gradient(135deg, #4044e3, #8e44ad)",
+          borderRadius: "16px",
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
           width: "500px",
           mb: 4,
@@ -71,8 +70,8 @@ const SubscriptionOptions = () => {
       </Box>
 
       {/* Заголовок */}
-      <Typography variant="h4" gutterBottom>
-        Повышайте свою производительность с помощью Cofilm
+      <Typography variant="h4" gutterBottom sx={{ color: "#4044e3" }}>
+        Повышайте свою производительность с CopyReels
       </Typography>
       <Typography variant="subtitle1" color="textSecondary" gutterBottom>
         Мы предлагаем одно из самых экономически эффективных решений на рынке!
@@ -89,13 +88,13 @@ const SubscriptionOptions = () => {
             borderRadius: "30px",
             background:
               selected === "yearly"
-                ? "linear-gradient(135deg, #a987c0, #e0c5f0)"
+                ? "linear-gradient(135deg, #4044e3, #8e44ad)"
                 : "transparent",
             color: selected === "yearly" ? "#fff" : "#000",
             "&:hover": {
               background:
                 selected === "yearly"
-                  ? "linear-gradient(135deg, #a987c0, #e0c5f0)"
+                  ? "linear-gradient(135deg, #4044e3, #8e44ad)"
                   : "transparent",
             },
           }}
@@ -111,13 +110,13 @@ const SubscriptionOptions = () => {
             borderRadius: "30px",
             background:
               selected === "monthly"
-                ? "linear-gradient(135deg, #a987c0, #e0c5f0)"
+                ? "linear-gradient(135deg, #4044e3, #8e44ad)"
                 : "transparent",
             color: selected === "monthly" ? "#fff" : "#000",
             "&:hover": {
               background:
                 selected === "monthly"
-                  ? "linear-gradient(135deg, #a987c0, #e0c5f0)"
+                  ? "linear-gradient(135deg, #4044e3, #8e44ad)"
                   : "transparent",
             },
           }}
@@ -137,17 +136,20 @@ const SubscriptionOptions = () => {
               textAlign: "left",
               maxWidth: "350px",
               minHeight: "600px",
-              border: "2px solid #e0c5f0",
+              border: "2px solid #4044e3",
               backgroundColor: "rgba(240, 240, 255, 0.95)",
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "#4044e3" }}
+            >
               Unlimited
             </Typography>
-            <Typography variant="h4" sx={{ mt: 1 }}>
+            <Typography variant="h4" sx={{ mt: 1, color: "#4044e3" }}>
               $24.9/месяц
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" sx={{ mb: 2, color: "#6c757d" }}>
               $299 в год, счет выставляется ежегодно
             </Typography>
             <Button
@@ -155,56 +157,59 @@ const SubscriptionOptions = () => {
               sx={{
                 mt: 2,
                 mb: 2,
-                backgroundColor: "#6c63ff",
-                "&:hover": { backgroundColor: "#5752d4" },
+                backgroundColor: "#4044e3",
+                "&:hover": { backgroundColor: "#303c9a" },
               }}
             >
               Подписаться
             </Button>
             <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 2 }}>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", mb: 2, color: "#4044e3" }}
+            >
               Преимущества Unlimited
             </Typography>
             <List>
               <ListItem>
                 <ListItemIcon>
-                  <InfiniteIcon color="primary" />
+                  <InfiniteIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="Неограниченная транскрипция видео в текст" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <InfiniteIcon color="primary" />
+                  <InfiniteIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="Неограниченный AI Писатель" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <InfiniteIcon color="primary" />
+                  <InfiniteIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="Неограниченное резюме для YouTube" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <InfiniteIcon color="primary" />
+                  <InfiniteIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="Неограниченный AI для Gmail" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <YouTubeIcon color="secondary" />
+                  <YouTubeIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="Длинные видео на YouTube" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <InstagramIcon color="secondary" />
+                  <InstagramIcon sx={{ color: "#E4405F" }} />
                 </ListItemIcon>
                 <ListItemText primary="Reels в Instagram" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <TikTokIcon color="secondary" />
+                  <TikTokIcon sx={{ color: "#E4405F" }} />
                 </ListItemIcon>
                 <ListItemText primary="Ссылки TikTok" />
               </ListItem>
@@ -221,17 +226,20 @@ const SubscriptionOptions = () => {
               textAlign: "left",
               maxWidth: "350px",
               minHeight: "600px",
-              border: "2px solid #e0c5f0",
+              border: "2px solid #4044e3",
               backgroundColor: "rgba(240, 240, 255, 0.95)",
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Cofilm Pro+
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "#4044e3" }}
+            >
+              CopyReels Pro
             </Typography>
-            <Typography variant="h4" sx={{ mt: 1 }}>
+            <Typography variant="h4" sx={{ mt: 1, color: "#4044e3" }}>
               $16.6/месяц
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" sx={{ mb: 2, color: "#6c757d" }}>
               $199 в год, счет выставляется ежегодно
             </Typography>
             <Button
@@ -239,56 +247,59 @@ const SubscriptionOptions = () => {
               sx={{
                 mt: 2,
                 mb: 2,
-                backgroundColor: "#6c63ff",
-                "&:hover": { backgroundColor: "#5752d4" },
+                backgroundColor: "#4044e3",
+                "&:hover": { backgroundColor: "#303c9a" },
               }}
             >
               Подписаться
             </Button>
             <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 2 }}>
-              Преимущества Cofilm Pro+
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", mb: 2, color: "#4044e3" }}
+            >
+              Преимущества CopyReels Pro
             </Typography>
             <List>
               <ListItem>
                 <ListItemIcon>
-                  <CheckCircleIcon color="primary" />
+                  <CheckCircleIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="100,000 AI слов транскрипция видео в текст" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <CheckCircleIcon color="primary" />
+                  <CheckCircleIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="100,000 AI слов VAI Писатель" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <CheckCircleIcon color="primary" />
+                  <CheckCircleIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="100,000 AI слов резюме для YouTube" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <InfiniteIcon color="primary" />
+                  <InfiniteIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="Неограниченный AI для Gmail" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <YouTubeIcon color="secondary" />
+                  <YouTubeIcon sx={{ color: "#4044e3" }} />
                 </ListItemIcon>
                 <ListItemText primary="Длинные видео на YouTube" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <InstagramIcon color="secondary" />
+                  <InstagramIcon sx={{ color: "#E4405F" }} />
                 </ListItemIcon>
                 <ListItemText primary="Reels в Instagram" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <TikTokIcon color="secondary" />
+                  <TikTokIcon sx={{ color: "#E4405F" }} />
                 </ListItemIcon>
                 <ListItemText primary="Ссылки TikTok" />
               </ListItem>
@@ -299,7 +310,7 @@ const SubscriptionOptions = () => {
 
       {/* История счетов */}
       <Box sx={{ mt: 6 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#4044e3" }}>
           История счетов
         </Typography>
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
@@ -314,11 +325,15 @@ const SubscriptionOptions = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: "bold" }}>ДАТА</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>
+                <TableCell sx={{ fontWeight: "bold", color: "#4044e3" }}>
+                  ДАТА
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "#4044e3" }}>
                   ИТОГО (ВКЛЮЧАЯ НАЛОГ)
                 </TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>ПРОСМОТР</TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "#4044e3" }}>
+                  ПРОСМОТР
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>{/* Add table rows here if needed */}</TableBody>
@@ -328,8 +343,8 @@ const SubscriptionOptions = () => {
           Свяжитесь с нами, если у вас возникнут дополнительные вопросы.
         </Typography>
         <Box sx={{ mt: 1 }}>
-          <TelegramIcon color="primary" sx={{ mr: 1 }} />
-          <EmailIcon color="primary" />
+          <TelegramIcon sx={{ color: "#4044e3", mr: 1 }} />
+          <EmailIcon sx={{ color: "#4044e3" }} />
         </Box>
       </Box>
     </Box>

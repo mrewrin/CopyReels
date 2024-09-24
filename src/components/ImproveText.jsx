@@ -4,8 +4,6 @@ import {
   Typography,
   TextField,
   Button,
-  // Select,
-  // MenuItem,
   Grid,
   IconButton,
 } from "@mui/material";
@@ -15,8 +13,6 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
 const ImproveText = () => {
-  // const [language, setLanguage] = useState("Испанский");
-  // const [wordCount, setWordCount] = useState("По Умолчанию");
   const [history, setHistory] = useState([]);
   const [selectedTextDetail, setSelectedTextDetail] = useState(null);
   const [inputText, setInputText] = useState("");
@@ -31,7 +27,6 @@ const ImproveText = () => {
       date: new Date().toLocaleDateString(),
     };
 
-    // Добавляем в историю и переходим к детальному просмотру
     setHistory([...history, newEntry]);
     setSelectedTextDetail(newEntry);
     setInputText(""); // Очищаем инпут после добавления в историю
@@ -66,7 +61,7 @@ const ImproveText = () => {
               startIcon={<ArrowBackIcon />}
               onClick={handleBack}
               sx={{
-                color: "#8e44ad",
+                color: "#4044e3", // Используем основной синий цвет
                 textTransform: "none",
                 fontSize: "0.875rem",
               }}
@@ -101,33 +96,7 @@ const ImproveText = () => {
                   navigator.clipboard.writeText(selectedTextDetail.fullText)
                 }
               >
-                <FileCopyIcon />
-              </IconButton>
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              p: 3,
-              mb: 3,
-            }}
-          >
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {selectedTextDetail.fullText}
-            </Typography>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Typography variant="body2" color="textSecondary">
-                {selectedTextDetail.date}
-              </Typography>
-              <IconButton
-                onClick={() =>
-                  navigator.clipboard.writeText(selectedTextDetail.fullText)
-                }
-              >
-                <FileCopyIcon />
+                <FileCopyIcon sx={{ color: "#4044e3" }} />
               </IconButton>
             </Box>
           </Box>
@@ -138,13 +107,13 @@ const ImproveText = () => {
               fullWidth
               startIcon={<FileCopyIcon />}
               sx={{
-                backgroundColor: "#f0f0f0",
-                color: "#000",
+                backgroundColor: "#e0f3ff", // Светло-синий цвет
+                color: "#4044e3", // Основной синий цвет
                 borderRadius: "16px",
                 padding: "10px 16px",
                 marginRight: 1,
                 "&:hover": {
-                  backgroundColor: "#e0e0e0",
+                  backgroundColor: "#cce0ff",
                 },
               }}
             >
@@ -154,13 +123,13 @@ const ImproveText = () => {
               fullWidth
               startIcon={<RefreshIcon />}
               sx={{
-                backgroundColor: "#f0f0f0",
-                color: "#000",
+                backgroundColor: "#e0f3ff",
+                color: "#4044e3",
                 borderRadius: "16px",
                 padding: "10px 16px",
                 marginLeft: 1,
                 "&:hover": {
-                  backgroundColor: "#e0e0e0",
+                  backgroundColor: "#cce0ff",
                 },
               }}
             >
@@ -174,8 +143,8 @@ const ImproveText = () => {
           {/* Заголовок */}
           <Box textAlign="center" sx={{ mb: 4 }}>
             <Typography
-              variant="h5"
-              sx={{ mb: 1, fontWeight: 500, color: "#333" }}
+              variant="h4"
+              sx={{ mb: 1, fontWeight: 500, color: "#4044e3" }} // Основной синий цвет
             >
               Перефразировать или написать с нуля AI
             </Typography>
@@ -202,10 +171,10 @@ const ImproveText = () => {
                     borderColor: "#ddd",
                   },
                   "&:hover fieldset": {
-                    borderColor: "#8e44ad",
+                    borderColor: "#4044e3",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#8e44ad",
+                    borderColor: "#4044e3",
                   },
                 },
               }}
@@ -214,51 +183,18 @@ const ImproveText = () => {
 
           {/* Опции */}
           <Grid container spacing={2} alignItems="center" sx={{ mb: 4 }}>
-            <Grid item xs={-1}>
-              {/* <Select
-                fullWidth
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                variant="outlined"
-                sx={{
-                  backgroundColor: "#fff",
-                  borderRadius: "16px",
-                  minWidth: "120px",
-                }}
-              >
-                <MenuItem value="Испанский">Испанский</MenuItem>
-                <MenuItem value="Английский">Английский</MenuItem>
-                <MenuItem value="Французский">Французский</MenuItem>
-              </Select> */}
-            </Grid>
             <Grid item xs={4}>
-              {/* <Select
-                fullWidth
-                value={wordCount}
-                onChange={(e) => setWordCount(e.target.value)}
-                variant="outlined"
-                sx={{
-                  backgroundColor: "#fff",
-                  borderRadius: "16px",
-                  minWidth: "120px",
-                }}
-              >
-                <MenuItem value="По Умолчанию">По Умолчанию</MenuItem>
-                <MenuItem value="100 слов">100 слов</MenuItem>
-                <MenuItem value="200 слов">200 слов</MenuItem>
-              </Select> */}
-            </Grid>
-            <Grid item xs={4}>
+              {/* Кнопка генерации */}
               <Button
                 fullWidth
                 variant="contained"
                 sx={{
-                  backgroundColor: "#6c63ff",
+                  backgroundColor: "#4044e3", // Основной синий цвет
                   color: "#fff",
                   borderRadius: "16px",
                   padding: "10px 16px",
                   "&:hover": {
-                    backgroundColor: "#5752d4",
+                    backgroundColor: "#303c9a",
                   },
                 }}
                 onClick={generateText}
@@ -269,7 +205,7 @@ const ImproveText = () => {
           </Grid>
 
           {/* История */}
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2, color: "#4044e3" }}>
             История
           </Typography>
           <Box
@@ -289,13 +225,15 @@ const ImproveText = () => {
                 sx={{ cursor: "pointer", mb: 1 }}
               >
                 <Box onClick={() => handleOpen(entry)} sx={{ flexGrow: 1 }}>
-                  <Typography variant="body1">{entry.text}</Typography>
+                  <Typography variant="body1" color="#4044e3">
+                    {entry.text}
+                  </Typography>
                   <Typography variant="body2" color="textSecondary">
                     {entry.date}
                   </Typography>
                 </Box>
                 <IconButton onClick={() => handleDelete(index)}>
-                  <DeleteIcon />
+                  <DeleteIcon sx={{ color: "#4044e3" }} />
                 </IconButton>
               </Box>
             ))}
