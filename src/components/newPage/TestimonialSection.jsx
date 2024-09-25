@@ -6,10 +6,7 @@ export default function TestimonialsCopyReels() {
       <div className="container mx-auto text-center">
         {/* Заголовок */}
         <div className="mb-12">
-          <h3 className="text-blue-500 font-semibold text-lg mb-2">
-            Наши основатели
-          </h3>
-          <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">
+          <h2 className="text-4xl font-extrabold text-blue-500 dark:text-white">
             Создано лучшими
           </h2>
         </div>
@@ -22,18 +19,11 @@ export default function TestimonialsCopyReels() {
               После интеграции CopyReels с нашим процессом, мы значительно
               увеличили скорость создания контента и повысили качество.
             </p>
-            <div className="flex items-center mb-6">
-              <img
-                src="https://via.placeholder.com/48"
-                alt="Алексей Иванов"
-                className="w-12 h-12 rounded-full shadow-md"
-              />
-              <div className="text-left ml-4">
-                <p className="font-semibold text-gray-900 dark:text-white">
-                  Алексей Иванов
-                </p>
-                <p className="text-gray-500">Маркетолог, Видеомастер</p>
-              </div>
+            <div className="text-left mb-6">
+              <p className="font-semibold text-gray-900 dark:text-white">
+                Алексей Иванов
+              </p>
+              <p className="text-gray-500">Маркетолог, Видеомастер</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-blue-50 p-4 rounded-xl shadow-md dark:bg-blue-700">
@@ -46,10 +36,10 @@ export default function TestimonialsCopyReels() {
               </div>
               <div className="bg-blue-50 p-4 rounded-xl shadow-md dark:bg-blue-700">
                 <p className="text-2xl font-bold text-blue-600 dark:text-white">
-                  $100k+
+                  40%
                 </p>
                 <p className="text-gray-600 dark:text-gray-200">
-                  Дополнительный доход
+                  Увеличение производительности
                 </p>
               </div>
             </div>
@@ -61,18 +51,11 @@ export default function TestimonialsCopyReels() {
               CopyReels — незаменимый инструмент для обработки видео и улучшения
               контента. С ним наша работа стала быстрее и эффективнее.
             </p>
-            <div className="flex items-center mb-6">
-              <img
-                src="https://via.placeholder.com/48"
-                alt="Мария Петрова"
-                className="w-12 h-12 rounded-full shadow-md"
-              />
-              <div className="text-left ml-4">
-                <p className="font-semibold text-gray-900 dark:text-white">
-                  Мария Петрова
-                </p>
-                <p className="text-gray-500">Контент-менеджер, StreamLine</p>
-              </div>
+            <div className="text-left mb-6">
+              <p className="font-semibold text-gray-900 dark:text-white">
+                Мария Петрова
+              </p>
+              <p className="text-gray-500">Контент-менеджер, StreamLine</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-blue-50 p-4 rounded-xl shadow-md dark:bg-blue-700">

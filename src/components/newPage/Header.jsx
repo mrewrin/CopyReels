@@ -36,7 +36,7 @@ const Header = () => {
       sx={{
         backgroundColor: "#f9fafb",
         color: "#1f2937",
-        borderRadius: "0 0 20px 20px",
+        borderRadius: "0 0 0 0",
         boxShadow: "none",
         paddingLeft: 11,
         paddingRight: 5,
