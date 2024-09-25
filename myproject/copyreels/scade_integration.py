@@ -6,12 +6,12 @@ import logging
 import time
 from datetime import datetime
 from celery import shared_task
-from .models import VideoProcessResult
+from .models import VideoProcessResult  # Importing the model for saving results
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Ваши переменные
+# Переменные для работы с Scade
 SCADE_FLOW = 37048
 SCADE_ACCESS_TOKEN = "NWJhNjYxZjktNDIwNS00YWYwLThmYzctYjMzMGE1ODY4YTk5Om9SblZPOWJtNU83RHhWSDZqUDFlaE8wZlV5eW05ZA=="
 
@@ -42,27 +42,48 @@ USER_AGENTS = {
     'firefox': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
 }
 
-
-youtube_cookies_path = "/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt"
-instagram_cookies_path = "/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt" 
-
-
-# Путь к файлам cookies для YouTube и Instagram
+# Пути к файлам cookies для YouTube и Instagram
 COOKIES_FILES = {
-    'youtube': '/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt',  # Укажи путь к файлу cookies для YouTube
-    'instagram': '/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt',  # Укажи путь к файлу cookies для Instagram
+    'youtube': '/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt',
+    'instagram': '/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt'
 }
 
 
-def download_audio(url, output_folder='audio_files', throttled_rate='100K'):
+# Загрузка аудио с URL
+def download_audio(url, output_folder='audio_files', throttled_rate='100K', proxy=None):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
 
+    # Проверка наличия папки для сохранения аудио
     if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+        try:
+            os.makedirs(output_folder)
+            logging.info(f"Директория {output_folder} успешно создана.")
+        except OSError as e:
+            logging.error(f"Ошибка при создании директории {output_folder}: {e}")
+            return None
 
+    # Формирование имени файла с временной меткой
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_file = os.path.join(output_folder, f'audio_{timestamp}.mp3')
 
+    # Определяем, для какого сервиса используются cookies
+    if 'youtube' in url or 'youtu.be' in url:
+        service = 'youtube'
+    elif 'instagram' in url:
+        service = 'instagram'
+    else:
+        logging.error(f"Неподдерживаемый сервис для URL: {url}")
+        return None
+
+    cookies_path = COOKIES_FILES.get(service)
+
+    if not os.path.exists(cookies_path):
+        logging.error(f"Файл cookies для {service} не найден по пути: {cookies_path}")
+        return None
+
+    logging.info(f"Используются cookies для {service}: {cookies_path}")
+
+    # Параметры для yt-dlp
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_file + '.%(ext)s',
@@ -75,22 +96,34 @@ def download_audio(url, output_folder='audio_files', throttled_rate='100K'):
         'noplaylist': True,
         'throttled-rate': throttled_rate,
         'nocheckcertificate': True,
-        'cookiefrombrowser': 'chrome',  # Важно! Извлечение куков из Chrome
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36'
+        'cookies': cookies_path,  # Явная передача файла cookies
+        'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
     }
 
+    if proxy:
+        ydl_opts['proxy'] = proxy  # Добавляем прокси-сервер
+        logging.info(f"Используется прокси-сервер: {proxy}")
+
     try:
+        # Запуск загрузки через yt-dlp
+        logging.info(f"Загрузка аудио началась с URL: {url}")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
+        # Проверка наличия сохраненного файла
         if os.path.exists(output_file):
             logging.info(f'Аудио успешно извлечено и сохранено как {output_file}')
+            return output_file
         else:
             logging.error(f'Не удалось сохранить аудио файл: {output_file}')
+            return None
+
     except Exception as e:
         logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
+        return None
 
 
+# Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
     logging.info(f"Запуск потока Scade для URL {audio_file_url}")
     url = f"https://api.scade.pro/api/v1/scade/flow/{flow_id}/execute"
@@ -128,6 +161,7 @@ def start_scade_flow(flow_id, scade_access_token, audio_file_url):
     return None
 
 
+# Получение результата задачи Scade
 def get_scade_result(task_id, scade_access_token, max_attempts=25, timeout=300):
     logging.info(f"Ожидание завершения задачи Scade с ID {task_id}")
     result_url = f"https://api.scade.pro/api/v1/task/{task_id}"
@@ -161,29 +195,46 @@ def get_scade_result(task_id, scade_access_token, max_attempts=25, timeout=300):
     return None
 
 
+# Основная задача Celery
 @shared_task
 def process_video_task(url, user_info):
-    logging.info(f"Начата обработка видео с URL: {url} для пользователя: {user_info}")
+    logging.info(f"Запущена задача для обработки видео URL: {url}, пользователя: {user_info}")
 
-    # Этап 1: Скачивание аудио
-    logging.info("Начато скачивание аудио.")
-    proxy = 'socks5://199.229.254.129:4145'
-    result = download_audio(url, proxy=proxy)
-    if result:
-        logging.info("Аудио успешно скачано и обработано.")
+    # Этап 1: Загрузка аудио
+    audio_file_path = download_audio(url)
+    if audio_file_path:
+        logging.info(f"Аудио скачано и сохранено: {audio_file_path}")
 
-        # Этап 2: Сохранение результатов в базу данных
-        logging.info("Начинаем сохранение результатов в базу данных.")
-        video_result = VideoProcessResult.objects.create(
-            url=url,
-            user_info=user_info,
-            transcribation=result.get('Transcribation', ''),
-            rewriting=result.get('Rewriting', '')
-        )
-        logging.info(f"Результаты сохранены в базу данных с ID: {video_result.id}")
+        # Этап 2: Загрузка аудио на file.io для передачи в Scade
+        file_io_link = upload_to_file_io(audio_file_path)
+        if file_io_link:
+            logging.info(f"Файл загружен на file.io: {file_io_link}")
 
-        # Возвращаем сам результат (словарь), если это требуется для дальнейшего использования
-        return result
+            # Этап 3: Запуск потока Scade для обработки аудио
+            task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, file_io_link)
+            if task_id:
+                logging.info(f"Задача Scade успешно запущена, ID: {task_id}")
+
+                # Этап 4: Ожидание завершения задачи Scade и получение результатов
+                scade_result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
+                if scade_result:
+                    logging.info(f"Результаты Scade получены: {scade_result}")
+
+                    # Этап 5: Сохранение результата в базу данных
+                    video_result = VideoProcessResult.objects.create(
+                        url=url,
+                        user_info=user_info,
+                        transcribation=scade_result.get('Transcribation', ''),
+                        rewriting=scade_result.get('Rewriting', '')
+                    )
+                    logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
+                    return video_result
+                else:
+                    logging.error("Не удалось получить результаты Scade")
+            else:
+                logging.error("Ошибка при запуске задачи Scade")
+        else:
+            logging.error("Ошибка при загрузке файла на file.io")
     else:
-        logging.error("Ошибка при скачивании аудио или его обработке.")
+        logging.error("Ошибка при скачивании аудио")
     return None
