@@ -23,6 +23,22 @@ import TranscriptionView from "./TranscriptionView";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import InstagramIcon from "@mui/icons-material/Instagram";
 
+// Utility function to get the CSRF token from cookies
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 export default function MainContent() {
   const [activeContent, setActiveContent] = useState("all");
   const [history, setHistory] = useState([]);
@@ -93,7 +109,54 @@ export default function MainContent() {
   };
 
   const checkTaskStatus = async (taskId, url) => {
-    // Логика для проверки статуса задачи...
+    try {
+      const apiurl = `http://176.124.212.138/api/check_task_status/${taskId}/`;
+      const token = localStorage.getItem("token");
+      const csrfToken = getCookie("csrftoken");
+      const intervalId = setInterval(async () => {
+        const response = await fetch(apiurl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+            Authorization: `Token ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === "completed") {
+            clearInterval(intervalId);
+
+            const newEntry = {
+              title: `Транскрипция по (${url})`,
+              url: url,
+              source: "Instagram",
+              date: new Date().toLocaleString(),
+              content: data.Transcribation,
+              rewriteContent: data.Rewriting,
+              wordCount: data.Transcribation.split(" ").length,
+              rewriteWordCount: data.Rewriting.split(" ").length,
+            };
+
+            handleAddToHistory(newEntry);
+            setSelectedTranscription(newEntry);
+            setUrl("");
+            setIsLoading(false);
+            setLoadingMessage("");
+          } else {
+            setLoadingMessage(
+              `Прогресс: ${data.progress}% происходит магия, ожидайте...`
+            );
+          }
+        } else {
+          const errorData = await response.json();
+          console.error("Ошибка при проверке статуса задачи:", errorData);
+        }
+      }, 5000); // Интервал 5 секунд
+    } catch (error) {
+      console.error("Ошибка при проверке статуса задачи:", error);
+    }
   };
 
   const handleTranscription = async () => {
@@ -101,7 +164,36 @@ export default function MainContent() {
       setIsLoading(true);
       setLoadingMessage("Происходит магия, ожидайте...");
 
-      // Логика для транскрипции
+      try {
+        const csrfToken = getCookie("csrftoken");
+        const authToken = localStorage.getItem("token");
+        const apiurl = "http://176.124.212.138/api/process_video/";
+
+        const response = await fetch(apiurl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+            Authorization: `Token ${authToken}`,
+          },
+          body: JSON.stringify({
+            video_url: url,
+            user_info: "default_user_info",
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const taskId = data.task_id;
+
+          checkTaskStatus(taskId, url);
+        } else {
+          const errorData = await response.json();
+          console.error("Ошибка при получении данных с сервера:", errorData);
+        }
+      } catch (error) {
+        console.error("Ошибка транскрипции:", error);
+      }
     }
   };
 

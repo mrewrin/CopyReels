@@ -29,17 +29,37 @@ export default function HeroCopyReels() {
 
         {/* Кнопка призыва к действию */}
         <Link
-          to="/get-started"
+          to="/login"
           className="inline-block bg-blue-600 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 mb-12"
         >
           Попробовать CopyReels сейчас
         </Link>
 
-        {/* Социальные иконки */}
-        <div className="flex justify-center space-x-8 mt-20">
-          <FaTiktok className="w-12 h-12 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-105" />
-          <FaYoutube className="w-12 h-12 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-105" />
-          <FaInstagram className="w-12 h-12 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-105" />
+        {/* Заголовок над иконками */}
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">
+          Вирусный ролик за 3 шага
+        </h2>
+
+        {/* Социальные иконки с подписями */}
+        <div className="flex justify-center space-x-12 mt-10">
+          <div className="flex flex-col items-center">
+            <FaTiktok className="w-16 h-16 md:w-20 md:h-20 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-110" />
+            <p className="text-gray-800 dark:text-white mt-3 text-lg md:text-xl font-semibold">
+              TikTok
+            </p>
+          </div>
+          <div className="flex flex-col items-center">
+            <FaYoutube className="w-16 h-16 md:w-20 md:h-20 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-110" />
+            <p className="text-gray-800 dark:text-white mt-3 text-lg md:text-xl font-semibold">
+              YouTube
+            </p>
+          </div>
+          <div className="flex flex-col items-center">
+            <FaInstagram className="w-16 h-16 md:w-20 md:h-20 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-110" />
+            <p className="text-gray-800 dark:text-white mt-3 text-lg md:text-xl font-semibold">
+              Instagram
+            </p>
+          </div>
         </div>
       </div>
 

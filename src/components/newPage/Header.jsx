@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { Link } from "react-scroll"; // Импортируем Link для плавного скролла
 import {
   AppBar,
   Toolbar,
@@ -17,7 +18,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const navigate = useNavigate();
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -38,12 +38,15 @@ const Header = () => {
         color: "#1f2937",
         borderRadius: "0 0 20px 20px",
         boxShadow: "none",
+        paddingLeft: 11,
+        paddingRight: 5,
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", padding: "0 16px" }}>
+      <Toolbar sx={{ justifyContent: "space-between", padding: "0" }}>
+        {/* Логотип слева */}
         <Typography
           variant="h6"
-          component={Link}
+          component={RouterLink}
           to="/"
           sx={{
             textDecoration: "none",
@@ -57,9 +60,35 @@ const Header = () => {
           CopyReels
         </Typography>
 
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+        {/* Центрированное меню навигации для десктопа */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: { xs: "none", md: "flex" },
+            justifyContent: "center",
+            gap: 6,
+          }}
+        >
+          <Link to="features-section" spy={true} smooth={true} duration={500}>
+            <Button
+              sx={{
+                borderRadius: "50px",
+                padding: "10px 20px",
+                textTransform: "none",
+                color: "#1f2937",
+                backgroundColor: "#f3f4f6",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                transition: "background-color 0.3s, box-shadow 0.3s",
+                "&:hover": { backgroundColor: "#e0f2fe" },
+              }}
+            >
+              Преимущества
+            </Button>
+          </Link>
+
           <Button
-            onClick={() => navigate("/about")}
+            component={RouterLink}
+            to="/price"
             sx={{
               borderRadius: "50px",
               padding: "10px 20px",
@@ -71,10 +100,48 @@ const Header = () => {
               "&:hover": { backgroundColor: "#e0f2fe" },
             }}
           >
-            About
+            Цены
           </Button>
+
           <Button
-            onClick={() => navigate("/login")}
+            component={RouterLink}
+            to="/blog"
+            sx={{
+              borderRadius: "50px",
+              padding: "10px 20px",
+              textTransform: "none",
+              color: "#1f2937",
+              backgroundColor: "#f3f4f6",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+              transition: "background-color 0.3s, box-shadow 0.3s",
+              "&:hover": { backgroundColor: "#e0f2fe" },
+            }}
+          >
+            Блог
+          </Button>
+          <Link to="footer" spy={true} smooth={true} duration={500}>
+            <Button
+              sx={{
+                borderRadius: "50px",
+                padding: "10px 20px",
+                textTransform: "none",
+                color: "#1f2937",
+                backgroundColor: "#f3f4f6",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                transition: "background-color 0.3s, box-shadow 0.3s",
+                "&:hover": { backgroundColor: "#e0f2fe" },
+              }}
+            >
+              Контакты
+            </Button>
+          </Link>
+        </Box>
+
+        {/* Кнопки аутентификации справа */}
+        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+          <Button
+            component={RouterLink}
+            to="/login"
             sx={{
               borderRadius: "50px",
               padding: "10px 20px",
@@ -89,7 +156,8 @@ const Header = () => {
             Войти
           </Button>
           <Button
-            onClick={() => navigate("/register")}
+            component={RouterLink}
+            to="/register"
             sx={{
               borderRadius: "50px",
               padding: "10px 20px",
@@ -105,6 +173,7 @@ const Header = () => {
           </Button>
         </Box>
 
+        {/* Меню для мобильных устройств */}
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
           <IconButton
             edge="start"
@@ -123,6 +192,7 @@ const Header = () => {
         </Box>
       </Toolbar>
 
+      {/* Drawer для мобильных устройств */}
       <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
         <Box
           sx={{ width: 250, padding: "16px" }}
@@ -131,14 +201,37 @@ const Header = () => {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            <ListItem button component={Link} to="/about">
-              <ListItemText primary="О нас" />
+            <ListItem button>
+              <Link
+                to="features-section"
+                spy={true}
+                smooth={true}
+                duration={500}
+              >
+                <ListItemText primary="Features" />
+              </Link>
             </ListItem>
             <Divider />
-            <ListItem button onClick={() => navigate("/login")}>
+            <ListItem button>
+              <Link
+                to="contacts-section"
+                spy={true}
+                smooth={true}
+                duration={500}
+              >
+                <ListItemText primary="Контакты" />
+              </Link>
+            </ListItem>
+            <Divider />
+            <ListItem button component={RouterLink} to="/blog">
+              <ListItemText primary="Блог" />
+            </ListItem>
+            <Divider />
+            <ListItem button component={RouterLink} to="/login">
               <ListItemText primary="Войти" />
             </ListItem>
-            <ListItem button onClick={() => navigate("/register")}>
+            <Divider />
+            <ListItem button component={RouterLink} to="/register">
               <ListItemText primary="Регистрация" />
             </ListItem>
           </List>

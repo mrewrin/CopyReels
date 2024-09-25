@@ -29,7 +29,7 @@ export default function UseCaseSection() {
   ];
 
   return (
-    <section className="py-20 bg-blue-50">
+    <section className="py-20 bg-blue-50" id="features-section">
       <div className="container mx-auto text-center">
         <h2 className="text-4xl font-bold mb-8 text-blue-600">
           CopyReels — Все инструменты для работы с видеоконтентом.

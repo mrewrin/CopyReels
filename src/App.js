@@ -156,6 +156,7 @@ import Home from "./components/newPage/Home";
 import LoginPage from "./components/newPage/LoginPage";
 import RegisterPage from "./components/newPage/RegisterPage";
 import AboutPage from "./components/AboutPage";
+import PricingPage from "./components/newPage/PricingPage";
 
 export default function App() {
   return (
@@ -165,6 +166,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/price" element={<PricingPage />} />
       </Routes>
     </Router>
   );
