@@ -4,7 +4,10 @@ import { Instagram, Twitter } from "@mui/icons-material"; // Importing Material 
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-gradient-to-r from-blue-200 to-purple-200 py-10 rounded-t-lg">
+    <footer
+      className="w-full bg-gradient-to-r from-blue-200 to-purple-200 py-10 rounded-t-lg"
+      id="footer"
+    >
       <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* CopyReels description */}
         <div>

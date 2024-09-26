@@ -10,6 +10,57 @@
     transform: translateX(-100%);
   }
 }
+@keyframes waveAnimation {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-25px) translateY(10px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+.wave {
+  animation: waveAnimation 8s ease-in-out infinite;
+}
+
+/* кнопка анимация */
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.button-with-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-with-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  transform: skewX(-20deg);
+  animation: shine 5s infinite ease-in-out;
+}
 
 .marquee {
   display: flex;
@@ -97,4 +148,12 @@
 
 .modal-content form button:hover {
   background-color: #45a049;
+}
+
+.instagram-round {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.instagram-round:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
 }
