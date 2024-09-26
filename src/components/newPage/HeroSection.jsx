@@ -1,6 +1,6 @@
 import React from "react";
+import { FaInstagram } from "react-icons/fa"; // Импорт иконки Instagram
 import { Link } from "react-router-dom";
-import { FaTiktok, FaYoutube, FaInstagram } from "react-icons/fa"; // Иконки соцсетей
 import Header from "./Header";
 
 export default function HeroCopyReels() {
@@ -8,11 +8,55 @@ export default function HeroCopyReels() {
     <section className="relative min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900 flex flex-col justify-center">
       <Header />
       <div className="container mx-auto text-center px-6 md:px-12 py-12 md:py-24">
-        {/* Логотип CopyReels */}
+        {/* Логотип Instagram с постоянной анимацией */}
         <div className="flex justify-center items-center mb-10">
-          <h2 className="text-blue-600 font-bold text-5xl rounded-full p-6 bg-blue-50 shadow-md">
-            CopyReels
-          </h2>
+          <div
+            className="relative p-6 rounded-3xl shadow-lg instagram-round overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, #f3f4f6 0%, #dfe3e6 100%)",
+            }}
+          >
+            {/* Иконка Instagram */}
+            <FaInstagram className="text-pink-500 w-16 h-16 relative z-10" />
+
+            {/* Блик */}
+            <div
+              className="absolute top-0 left-0 w-full h-full bg-white opacity-20"
+              style={{
+                background:
+                  "linear-gradient(120deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0))",
+                animation: "shineEffect 3s infinite ease-in-out",
+              }}
+            ></div>
+          </div>
+
+          {/* Анимация блика */}
+          <style jsx>{`
+            @keyframes shineEffect {
+              0% {
+                transform: translateX(-100%);
+              }
+              100% {
+                transform: translateX(100%);
+              }
+            }
+
+            .instagram-round::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 200%;
+              height: 100%;
+              background: linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0.2) 0%,
+                rgba(255, 255, 255, 0.1) 60%,
+                rgba(255, 255, 255, 0) 100%
+              );
+              animation: shineEffect 3s infinite ease-in-out;
+            }
+          `}</style>
         </div>
 
         {/* Основной заголовок */}
@@ -27,20 +71,17 @@ export default function HeroCopyReels() {
           инструментами и оверлеями. Создавайте короткие видео быстро и просто.
         </p>
 
-        {/* Кнопка призыва к действию */}
+        {/* Кнопка призыва к действию с анимацией блика */}
         <Link
-          to="/get-started"
-          className="inline-block bg-blue-600 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 mb-12"
+          to="/login"
+          className="inline-block bg-blue-600 text-white font-semibold py-4 px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 mb-12 relative button-with-shine"
+          style={{
+            animation: "colorGlow 3s infinite ease-in-out",
+            zIndex: 1,
+          }}
         >
-          Попробовать CopyReels сейчас
+          <span className="relative z-10">Попробовать CopyReels сейчас</span>
         </Link>
-
-        {/* Социальные иконки */}
-        <div className="flex justify-center space-x-8 mt-20">
-          <FaTiktok className="w-12 h-12 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-105" />
-          <FaYoutube className="w-12 h-12 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-105" />
-          <FaInstagram className="w-12 h-12 p-3 text-gray-800 dark:text-white bg-white rounded-full shadow-md hover:text-blue-500 transition-colors duration-300 hover:scale-105" />
-        </div>
       </div>
 
       {/* Градиентный фон */}
@@ -55,6 +96,10 @@ export default function HeroCopyReels() {
           className="absolute top-0 left-0 w-full h-full opacity-20"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1440 320"
+          style={{
+            animation: "waveAnimation 5s ease-in-out infinite",
+            top: "255px",
+          }}
         >
           <path
             fill="#fff"

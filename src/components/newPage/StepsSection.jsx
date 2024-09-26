@@ -27,11 +27,6 @@ export default function StepsSection() {
               Вставьте ссылку на видео с YouTube, TikTok или любой другой
               платформы. CopyReels сразу же начнет анализ видео.
             </p>
-            <img
-              src="https://via.placeholder.com/150"
-              alt="Step 1"
-              className="w-full h-40 object-cover rounded-xl shadow-lg"
-            />
           </div>
 
           {/* Step 2 */}
@@ -48,11 +43,6 @@ export default function StepsSection() {
               CopyReels автоматически транскрибирует видео и создает новый
               уникальный текст, готовый для дальнейшего использования.
             </p>
-            <img
-              src="https://via.placeholder.com/150"
-              alt="Step 2"
-              className="w-full h-40 object-cover rounded-xl shadow-lg"
-            />
           </div>
 
           {/* Step 3 */}
@@ -69,18 +59,7 @@ export default function StepsSection() {
               Получите текст и рерайтинг в удобных форматах. Используйте их для
               своих блогов, соцсетей или вебсайтов.
             </p>
-            <img
-              src="https://via.placeholder.com/150"
-              alt="Step 3"
-              className="w-full h-40 object-cover rounded-xl shadow-lg"
-            />
           </div>
-        </div>
-
-        <div className="mt-16">
-          <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg rounded-full shadow-lg hover:bg-gradient-to-l hover:from-blue-700 hover:to-purple-700 transition duration-300">
-            Создать аккаунт
-          </button>
         </div>
       </div>
 
