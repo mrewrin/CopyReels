@@ -257,3 +257,5 @@ LOGGING = {
 CORS_ALLOWED_ORIGINS = [
     'http://165.227.137.248',  # Укажите здесь ваш домен
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
