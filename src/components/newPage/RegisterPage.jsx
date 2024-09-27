@@ -30,7 +30,7 @@ const RegisterPage = () => {
     setError("");
 
     // API запрос на регистрацию
-    fetch("http://176.124.212.138/api/register/", {
+    fetch("http://165.227.137.248/api/register/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
