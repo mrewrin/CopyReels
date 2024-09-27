@@ -118,7 +118,7 @@ const PricingPage = () => {
         </Typography>
 
         {/* Секция с тарифными планами */}
-        <Grid container spacing={10} justifyContent="center" paddingBottom={10}>
+        <Grid container spacing={2} justifyContent="center" paddingBottom={10}>
           {/* Карточка 1 */}
           <Grid item xs={12} md={4}>
             <PricingCard>

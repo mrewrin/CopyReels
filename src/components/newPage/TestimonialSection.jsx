@@ -2,7 +2,10 @@ import React from "react";
 
 export default function TestimonialsCopyReels() {
   return (
-    <section className="py-16 bg-gradient-to-b from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800">
+    <section
+      id="blog"
+      className="py-16 bg-gradient-to-b from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800"
+    >
       <div className="container mx-auto text-center">
         {/* Заголовок */}
         <div className="mb-12">
