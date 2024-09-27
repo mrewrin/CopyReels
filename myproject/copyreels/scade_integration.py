@@ -96,9 +96,17 @@ def download_audio(url, output_folder='audio_files', throttled_rate='100K', prox
         'noplaylist': True,
         'throttled-rate': throttled_rate,
         'nocheckcertificate': True,
-        'cookies': cookies_path,  # Явная передача файла cookies
+        # 'cookies': cookies_path,  # Если все же есть актуальный файл cookies
         'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
     }
+
+    # Добавляем логин и пароль, если работаем с Instagram или YouTube
+    if 'instagram' in url:
+        ydl_opts['username'] = 'your_instagram_username'
+        ydl_opts['password'] = 'your_instagram_password'
+    elif 'youtube' in url:
+        ydl_opts['username'] = 'your_youtube_username'
+        ydl_opts['password'] = 'your_youtube_password'
 
     if proxy:
         ydl_opts['proxy'] = proxy  # Добавляем прокси-сервер
