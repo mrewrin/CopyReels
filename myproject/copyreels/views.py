@@ -16,8 +16,7 @@ from django.utils.http import urlsafe_base64_decode
 from allauth.account.utils import send_email_confirmation
 from allauth.account.views import ConfirmEmailView
 from django.shortcuts import redirect
-from .models import VideoProcessResult
-from .scade_integration import process_video_task, download_audio
+from .scade_integration import process_video_task
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 

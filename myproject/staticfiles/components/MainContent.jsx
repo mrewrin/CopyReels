@@ -105,7 +105,7 @@ export default function MainContent() {
 
   const checkTaskStatus = async (taskId, url) => {
     try {
-      const apiurl = `http://176.124.212.138/api/check_task_status/${taskId}/`;
+      const apiurl = `http://165.227.137.248/api/check_task_status/${taskId}/`;
       const token = localStorage.getItem("token");
       const csrfToken = getCookie("csrftoken");
       const intervalId = setInterval(async () => {
@@ -160,7 +160,7 @@ export default function MainContent() {
       try {
         const csrfToken = getCookie("csrftoken");
         const authToken = localStorage.getItem("token");
-        const apiurl = "http://176.124.212.138/api/process_video/";
+        const apiurl = "http://165.227.137.248/api/process_video/";
 
         const response = await fetch(apiurl, {
           method: "POST",

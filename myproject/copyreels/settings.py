@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-#ah$*4-(_mn$$_*h-47rrhr$e7ejl3%qgbe_qo7&p85)7pmf_v
 DEBUG = False  # Установите в False на продакшене
 
 # Разрешённые хосты (заполнять в продакшене)
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '176.124.212.138', 'copyreels.ru', 'www.copyreels.ru']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '165.227.137.248', 'copyreels.ru', 'www.copyreels.ru']
 
 # ------------------------------------------------
 # Приложения
@@ -254,6 +254,8 @@ LOGGING = {
 # Настройки CORS
 # ------------------------------------------------
 
-CORS_ALLOWED_ORIGINS = [
-    'http://176.124.212.138',  # Укажите здесь ваш домен
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://165.227.137.248',  # Укажите здесь ваш домен
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
