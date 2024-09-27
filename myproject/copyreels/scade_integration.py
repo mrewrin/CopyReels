@@ -64,26 +64,22 @@ def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_file = os.path.join(output_folder, f'audio_{timestamp}.mp3')
 
-    # Определяем сервис
-    if 'youtube' in url or 'youtu.be' in url:
-        logging.info(f"Используется OAuth для YouTube")
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': output_file + '.%(ext)s',
-            'keepvideo': False,
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'noplaylist': True,
-            'nocheckcertificate': True,
-            'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
-            'throttled-rate': throttled_rate  # Ограничение скорости загрузки
-        }
-    else:
-        logging.error(f"Неподдерживаемый сервис для URL: {url}")
-        return None
+    # Параметры для yt-dlp
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': output_file + '.%(ext)s',
+        'keepvideo': False,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'noplaylist': True,
+        'nocheckcertificate': True,
+        'cookies': '/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt',  # Используем cookie для YouTube
+        'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
+        'throttled-rate': throttled_rate  # Ограничение скорости загрузки
+    }
 
     try:
         # Запуск загрузки через yt-dlp
@@ -102,6 +98,7 @@ def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     except Exception as e:
         logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
         return None
+
 
 
 # Запуск потока Scade
