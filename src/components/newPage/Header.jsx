@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-scroll"; // Импортируем Link для плавного скролла
 import {
   AppBar,
@@ -18,6 +18,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -29,6 +31,17 @@ const Header = () => {
     setIsDrawerOpen(open);
   };
 
+  // Переход на главную с возможностью прокрутки к нужному разделу
+  const handleScrollToSection = (section) => {
+    if (location.pathname === "/") {
+      // Если уже на главной, просто скроллим
+      document.getElementById(section)?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // Если не на главной, переходим на главную и передаем куда скроллить
+      navigate("/", { state: { scrollTo: section } });
+    }
+  };
+
   return (
     <AppBar
       position="fixed"
@@ -36,14 +49,13 @@ const Header = () => {
       sx={{
         backgroundColor: "#f9fafb",
         color: "#1f2937",
-        borderRadius: "0 0 0 0",
         boxShadow: "none",
         paddingLeft: 11,
         paddingRight: 5,
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between", padding: "0" }}>
-        {/* Логотип слева */}
+        {/* Логотип */}
         <Typography
           variant="h6"
           component={RouterLink}
@@ -53,14 +65,13 @@ const Header = () => {
             color: "#1f2937",
             fontWeight: 700,
             fontSize: "24px",
-            transition: "color 0.3s",
             "&:hover": { color: "#6366f1" },
           }}
         >
           CopyReels
         </Typography>
 
-        {/* Центрированное меню навигации для десктопа */}
+        {/* Меню для десктопа */}
         <Box
           sx={{
             flexGrow: 1,
@@ -69,26 +80,9 @@ const Header = () => {
             gap: 6,
           }}
         >
-          <Link to="features-section" spy={true} smooth={true} duration={500}>
-            <Button
-              sx={{
-                borderRadius: "50px",
-                padding: "10px 20px",
-                textTransform: "none",
-                color: "#1f2937",
-                backgroundColor: "#f3f4f6",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-                transition: "background-color 0.3s, box-shadow 0.3s",
-                "&:hover": { backgroundColor: "#e0f2fe" },
-              }}
-            >
-              Преимущества
-            </Button>
-          </Link>
-
+          {/* Прокрутка к преимуществам */}
           <Button
-            component={RouterLink}
-            to="/price"
+            onClick={() => handleScrollToSection("features-section")}
             sx={{
               borderRadius: "50px",
               padding: "10px 20px",
@@ -96,16 +90,33 @@ const Header = () => {
               color: "#1f2937",
               backgroundColor: "#f3f4f6",
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-              transition: "background-color 0.3s, box-shadow 0.3s",
+              "&:hover": { backgroundColor: "#e0f2fe" },
+            }}
+          >
+            Преимущества
+          </Button>
+
+          {/* Переход на страницу цен */}
+          <Button
+            component={RouterLink}
+            to="/price"
+            onClick={() => window.scrollTo(0, 0)} // Прокрутка наверх
+            sx={{
+              borderRadius: "50px",
+              padding: "10px 20px",
+              textTransform: "none",
+              color: "#1f2937",
+              backgroundColor: "#f3f4f6",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
               "&:hover": { backgroundColor: "#e0f2fe" },
             }}
           >
             Цены
           </Button>
 
+          {/* Прокрутка к блогу */}
           <Button
-            component={RouterLink}
-            to="/blog"
+            onClick={() => handleScrollToSection("blog")}
             sx={{
               borderRadius: "50px",
               padding: "10px 20px",
@@ -113,12 +124,13 @@ const Header = () => {
               color: "#1f2937",
               backgroundColor: "#f3f4f6",
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-              transition: "background-color 0.3s, box-shadow 0.3s",
               "&:hover": { backgroundColor: "#e0f2fe" },
             }}
           >
             Блог
           </Button>
+
+          {/* Прокрутка к контактам */}
           <Link to="footer" spy={true} smooth={true} duration={500}>
             <Button
               sx={{
@@ -128,7 +140,6 @@ const Header = () => {
                 color: "#1f2937",
                 backgroundColor: "#f3f4f6",
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-                transition: "background-color 0.3s, box-shadow 0.3s",
                 "&:hover": { backgroundColor: "#e0f2fe" },
               }}
             >
@@ -137,7 +148,7 @@ const Header = () => {
           </Link>
         </Box>
 
-        {/* Кнопки аутентификации справа */}
+        {/* Кнопки аутентификации */}
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
           <Button
             component={RouterLink}
@@ -149,7 +160,6 @@ const Header = () => {
               color: "#1f2937",
               backgroundColor: "#f3f4f6",
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-              transition: "background-color 0.3s, box-shadow 0.3s",
               "&:hover": { backgroundColor: "#e0f2fe" },
             }}
           >
@@ -165,7 +175,6 @@ const Header = () => {
               backgroundColor: "#6366f1",
               color: "#fff",
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-              transition: "background-color 0.3s, box-shadow 0.3s",
               "&:hover": { backgroundColor: "#4f46e5" },
             }}
           >
@@ -201,28 +210,24 @@ const Header = () => {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            <ListItem button>
-              <Link
-                to="features-section"
-                spy={true}
-                smooth={true}
-                duration={500}
-              >
-                <ListItemText primary="Features" />
-              </Link>
+            {/* Преимущества */}
+            <ListItem
+              button
+              onClick={() => handleScrollToSection("features-section")}
+            >
+              <ListItemText primary="Преимущества" />
             </ListItem>
             <Divider />
+
+            {/* Контакты */}
             <ListItem button>
-              <Link
-                to="contacts-section"
-                spy={true}
-                smooth={true}
-                duration={500}
-              >
+              <Link to="footer" spy={true} smooth={true} duration={500}>
                 <ListItemText primary="Контакты" />
               </Link>
             </ListItem>
             <Divider />
+
+            {/* Переходы на другие страницы */}
             <ListItem button component={RouterLink} to="/blog">
               <ListItemText primary="Блог" />
             </ListItem>

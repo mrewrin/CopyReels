@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaInstagram } from "react-icons/fa"; // Импорт иконки Instagram
 import { Link } from "react-router-dom";
 import Header from "./Header";
 
 export default function HeroCopyReels() {
+  const [videoLink, setVideoLink] = useState(""); // Состояние для поля ввода
+
+  const handleInputChange = (e) => {
+    setVideoLink(e.target.value);
+  };
+
   return (
     <section className="relative min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900 flex flex-col justify-center">
       <Header />
@@ -66,10 +72,25 @@ export default function HeroCopyReels() {
         </h1>
 
         {/* Описание */}
-        <p className="text-lg text-gray-700 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-          Мгновенно генерируйте вирусные ролики с бесконечными подписями,
-          инструментами и оверлеями. Создавайте короткие видео быстро и просто.
+        <p className="text-lg text-gray-700 dark:text-gray-300 mb-5 max-w-2xl mx-auto">
+          Вставьте ссылку на ваше видео и узнайте, как легко создать вирусные
+          ролики с помощью CopyReels.
         </p>
+
+        {/* Поле ввода для ссылки */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Вставьте ссылку на ваше видео"
+            value={videoLink}
+            onChange={handleInputChange}
+            className="w-full max-w-lg py-3 px-4 text-lg border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
+              marginBottom: "20px",
+            }}
+          />
+        </div>
 
         {/* Кнопка призыва к действию с анимацией блика */}
         <Link

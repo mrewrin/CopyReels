@@ -14,7 +14,6 @@ import {
 import {
   Link as LinkIcon,
   Edit as EditIcon,
-  YouTube as YouTubeIcon,
   Telegram as TelegramIcon,
   Email as EmailIcon,
 } from "@mui/icons-material";
@@ -89,7 +88,6 @@ const Sidebar = ({ onMenuItemClick }) => {
                 icon: <EditIcon />,
                 action: "improveText",
               },
-              { text: "YouTube", icon: <YouTubeIcon />, action: "youtube" },
               {
                 text: "Подписка",
                 icon: <PaymentsIcon />,
