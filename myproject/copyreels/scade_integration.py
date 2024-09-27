@@ -102,11 +102,11 @@ def download_audio(url, output_folder='audio_files', throttled_rate='100K', prox
 
     # Добавляем логин и пароль, если работаем с Instagram или YouTube
     if 'instagram' in url:
-        ydl_opts['username'] = 'your_instagram_username'
-        ydl_opts['password'] = 'your_instagram_password'
+        ydl_opts['username'] = 'mistaewrin'
+        ydl_opts['password'] = 'B27b8393'
     elif 'youtube' in url:
-        ydl_opts['username'] = 'your_youtube_username'
-        ydl_opts['password'] = 'your_youtube_password'
+        ydl_opts['username'] = 'mr.ewrin@gmail.com'
+        ydl_opts['password'] = 'B27b8393!'
 
     if proxy:
         ydl_opts['proxy'] = proxy  # Добавляем прокси-сервер
