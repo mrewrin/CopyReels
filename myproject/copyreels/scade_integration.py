@@ -48,7 +48,7 @@ USER_AGENTS = {
 }
 
 # Загрузка аудио с URL
-def download_audio(url, output_folder='audio_files'):
+def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
 
     # Проверка наличия папки для сохранения аудио
@@ -81,7 +81,7 @@ def download_audio(url, output_folder='audio_files'):
 
     logging.info(f"Используются cookies для {service}: {cookies_path}")
 
-    # Параметры для yt-dlp
+    # Параметры для yt-dlp с ограничением скорости
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_file + '.%(ext)s',
@@ -95,6 +95,7 @@ def download_audio(url, output_folder='audio_files'):
         'nocheckcertificate': True,
         'cookies': cookies_path,  # Явная передача файла cookies
         'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
+        'throttled-rate': throttled_rate  # Ограничение скорости загрузки
     }
 
     try:
