@@ -112,26 +112,24 @@ def account_view(request):
 def process_video(request):
     logger.info("Received process_video request")
 
-    # Log the request data for debugging
-    logger.info(f"Request data: {request.data}")
-
     try:
         video_url = request.data.get('video_url')  # Получаем URL из тела запроса
-        user_info = request.data.get('user_info')
-        user_info = user_info or 'Unknown'
+        user_info = request.data.get('user_info', 'Unknown')
 
         # Логгирование полученных данных
         logger.info(f"Extracted URL: {video_url}")
         logger.info(f"Extracted User Info: {user_info}")
 
-        # Запуск асинхронной задачи
-        task = process_video_task.delay(video_url, user_info)
-        logger.info(f"Started task with ID: {task.id}")
-        if not task:
-            logger.error("Failed to create Celery task.")
-            return Response({'error': 'Failed to create task'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Запускаем синхронный процесс обработки видео
+        result = process_video_task(video_url, user_info)
 
-        return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
+        if result:
+            logger.info("Задача успешно завершена.")
+            return Response({'status': 'completed', 'result': result.id}, status=status.HTTP_200_OK)
+        else:
+            logger.error("Ошибка при выполнении задачи")
+            return Response({'error': 'Processing error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     except Exception as e:
         logger.error(f"Error processing video: {e}")
         return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
