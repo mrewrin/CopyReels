@@ -64,22 +64,26 @@ def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_file = os.path.join(output_folder, f'audio_{timestamp}.mp3')
 
-    # Параметры для yt-dlp
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'outtmpl': output_file + '.%(ext)s',
-        'keepvideo': False,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'noplaylist': True,
-        'nocheckcertificate': True,
-        'cookies': '/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt',  # Используем cookie для YouTube
-        'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
-        'throttled-rate': throttled_rate  # Ограничение скорости загрузки
-    }
+    # Определяем сервис
+    if 'youtube' in url or 'youtu.be' in url:
+        logging.info(f"Используется OAuth для YouTube")
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': output_file + '.%(ext)s',
+            'keepvideo': False,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'noplaylist': True,
+            'nocheckcertificate': True,
+            'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
+            'throttled-rate': throttled_rate  # Ограничение скорости загрузки
+        }
+    else:
+        logging.error(f"Неподдерживаемый сервис для URL: {url}")
+        return None
 
     try:
         # Запуск загрузки через yt-dlp
@@ -98,7 +102,6 @@ def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     except Exception as e:
         logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
         return None
-
 
 
 # Запуск потока Scade
@@ -173,6 +176,8 @@ def get_scade_result(task_id, scade_access_token, max_attempts=25, timeout=300):
     return None
 
 
+# Основная задача Celery
+@shared_task
 def process_video_task(url, user_info):
     logging.info(f"Запущена задача для обработки видео URL: {url}, пользователя: {user_info}")
 
