@@ -73,9 +73,10 @@ def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
         }],
         'noplaylist': True,
         'nocheckcertificate': True,
-        'cookies': COOKIES_FILES.get('youtube'),  # Используем cookies для аутентификации
+        'cookies': COOKIES_FILES.get('youtube'),  # Using cookies for authentication
         'user-agent': USER_AGENTS.get('chrome'),
-        'throttled-rate': throttled_rate  # Ограничение скорости загрузки
+        'proxy': 'socks5://149.255.61.9:61103',  # Replace with the selected proxy
+        'throttled-rate': throttled_rate  # Throttling download speed
     }
 
     try:
