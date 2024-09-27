@@ -64,39 +64,26 @@ def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_file = os.path.join(output_folder, f'audio_{timestamp}.mp3')
 
-    # Определяем, для какого сервиса используются cookies
+    # Определяем сервис
     if 'youtube' in url or 'youtu.be' in url:
-        service = 'youtube'
-    elif 'instagram' in url:
-        service = 'instagram'
+        logging.info(f"Используется OAuth для YouTube")
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': output_file + '.%(ext)s',
+            'keepvideo': False,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'noplaylist': True,
+            'nocheckcertificate': True,
+            'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
+            'throttled-rate': throttled_rate  # Ограничение скорости загрузки
+        }
     else:
         logging.error(f"Неподдерживаемый сервис для URL: {url}")
         return None
-
-    cookies_path = COOKIES_FILES.get(service)
-
-    if not os.path.exists(cookies_path):
-        logging.error(f"Файл cookies для {service} не найден по пути: {cookies_path}")
-        return None
-
-    logging.info(f"Используются cookies для {service}: {cookies_path}")
-
-    # Параметры для yt-dlp с ограничением скорости
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'outtmpl': output_file + '.%(ext)s',
-        'keepvideo': False,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'noplaylist': True,
-        'nocheckcertificate': True,
-        'cookies': cookies_path,  # Явная передача файла cookies
-        'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
-        'throttled-rate': throttled_rate  # Ограничение скорости загрузки
-    }
 
     try:
         # Запуск загрузки через yt-dlp
@@ -115,6 +102,7 @@ def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     except Exception as e:
         logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
         return None
+
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
