@@ -173,8 +173,6 @@ def get_scade_result(task_id, scade_access_token, max_attempts=25, timeout=300):
     return None
 
 
-# Основная задача Celery
-@shared_task
 def process_video_task(url, user_info):
     logging.info(f"Запущена задача для обработки видео URL: {url}, пользователя: {user_info}")
 
