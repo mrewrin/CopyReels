@@ -42,67 +42,56 @@ COOKIES_FILES = {
     'instagram': '/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt'
 }
 
-# Список user-agent для различных браузеров
 USER_AGENTS = {
     'chrome': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
 }
 
-# Загрузка аудио с URL
+# Функция для загрузки аудио с YouTube
 def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
 
-    # Проверка наличия папки для сохранения аудио
+    # Проверка или создание директории для сохранения файлов
     if not os.path.exists(output_folder):
         try:
             os.makedirs(output_folder)
-            logging.info(f"Директория {output_folder} успешно создана.")
         except OSError as e:
             logging.error(f"Ошибка при создании директории {output_folder}: {e}")
             return None
 
-    # Формирование имени файла с временной меткой
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_file = os.path.join(output_folder, f'audio_{timestamp}.mp3')
 
-    # Определяем сервис
-    if 'youtube' in url or 'youtu.be' in url:
-        logging.info(f"Используется OAuth для YouTube")
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': output_file + '.%(ext)s',
-            'keepvideo': False,
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'noplaylist': True,
-            'nocheckcertificate': True,
-            'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
-            'throttled-rate': throttled_rate  # Ограничение скорости загрузки
-        }
-    else:
-        logging.error(f"Неподдерживаемый сервис для URL: {url}")
-        return None
+    # Определение настроек для yt-dlp
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': output_file + '.%(ext)s',
+        'keepvideo': False,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'noplaylist': True,
+        'nocheckcertificate': True,
+        'cookies': COOKIES_FILES.get('youtube'),  # Используем cookies для аутентификации
+        'user-agent': USER_AGENTS.get('chrome'),
+        'throttled-rate': throttled_rate  # Ограничение скорости загрузки
+    }
 
     try:
-        # Запуск загрузки через yt-dlp
-        logging.info(f"Загрузка аудио началась с URL: {url}")
+        logging.info(f"Загрузка аудио с URL: {url}")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        # Проверка наличия сохраненного файла
         if os.path.exists(output_file):
-            logging.info(f'Аудио успешно извлечено и сохранено как {output_file}')
+            logging.info(f'Аудио успешно сохранено как {output_file}')
             return output_file
         else:
             logging.error(f'Не удалось сохранить аудио файл: {output_file}')
             return None
-
     except Exception as e:
         logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
         return None
-
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
