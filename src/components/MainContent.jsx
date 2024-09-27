@@ -110,7 +110,7 @@ export default function MainContent() {
 
   const checkTaskStatus = async (taskId, url) => {
     try {
-      const apiurl = `http://176.124.212.138/api/check_task_status/${taskId}/`;
+      const apiurl = `http://165.227.137.248/api/check_task_status/${taskId}/`;
       const token = localStorage.getItem("token");
       const csrfToken = getCookie("csrftoken");
       const intervalId = setInterval(async () => {
