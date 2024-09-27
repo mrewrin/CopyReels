@@ -11,7 +11,7 @@ export default function HeroCopyReels() {
   };
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900 flex flex-col justify-center">
+    <section className="relative min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 flex flex-col justify-center">
       <Header />
       <div className="container mx-auto text-center px-6 md:px-12 py-12 md:py-24">
         {/* Логотип Instagram с постоянной анимацией */}
@@ -66,13 +66,13 @@ export default function HeroCopyReels() {
         </div>
 
         {/* Основной заголовок */}
-        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
           Достигните <span className="text-blue-500">1М</span> просмотров <br />
           на рекордной скорости
         </h1>
 
         {/* Описание */}
-        <p className="text-lg text-gray-700 dark:text-gray-300 mb-5 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-700 mb-5 max-w-2xl mx-auto">
           Вставьте ссылку на ваше видео и узнайте, как легко создать вирусные
           ролики с помощью CopyReels.
         </p>
