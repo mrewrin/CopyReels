@@ -36,21 +36,19 @@ def upload_to_file_io(file_path):
     return None
 
 
-# Список user-agent для различных браузеров
-USER_AGENTS = {
-    'chrome': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'firefox': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
-}
-
 # Пути к файлам cookies для YouTube и Instagram
 COOKIES_FILES = {
     'youtube': '/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt',
     'instagram': '/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt'
 }
 
+# Список user-agent для различных браузеров
+USER_AGENTS = {
+    'chrome': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+}
 
 # Загрузка аудио с URL
-def download_audio(url, output_folder='audio_files', throttled_rate='100K', proxy=None):
+def download_audio(url, output_folder='audio_files'):
     logging.info(f"Начало загрузки и извлечения аудио из {url}")
 
     # Проверка наличия папки для сохранения аудио
@@ -94,23 +92,10 @@ def download_audio(url, output_folder='audio_files', throttled_rate='100K', prox
             'preferredquality': '192',
         }],
         'noplaylist': True,
-        'throttled-rate': throttled_rate,
         'nocheckcertificate': True,
-        # 'cookies': cookies_path,  # Если все же есть актуальный файл cookies
+        'cookies': cookies_path,  # Явная передача файла cookies
         'user-agent': USER_AGENTS.get('chrome'),  # Используем User-Agent для Chrome
     }
-
-    # Добавляем логин и пароль, если работаем с Instagram или YouTube
-    if 'instagram' in url:
-        ydl_opts['username'] = 'mistaewrin'
-        ydl_opts['password'] = 'B27b8393'
-    elif 'youtube' in url:
-        ydl_opts['username'] = 'mr.ewrin@gmail.com'
-        ydl_opts['password'] = 'B27b8393!'
-
-    if proxy:
-        ydl_opts['proxy'] = proxy  # Добавляем прокси-сервер
-        logging.info(f"Используется прокси-сервер: {proxy}")
 
     try:
         # Запуск загрузки через yt-dlp
@@ -129,7 +114,6 @@ def download_audio(url, output_folder='audio_files', throttled_rate='100K', prox
     except Exception as e:
         logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
         return None
-
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
