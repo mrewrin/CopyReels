@@ -64,7 +64,7 @@ function RegisterModal({ onClose }) {
       return;
     }
 
-    fetch("http://165.227.137.248/api/register/", {
+    fetch("http://161.35.83.156/api/register/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
