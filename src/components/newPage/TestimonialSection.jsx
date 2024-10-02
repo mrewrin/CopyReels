@@ -10,7 +10,7 @@ export default function TestimonialsCopyReels() {
         {/* Заголовок */}
         <div className="mb-12">
           <h2 className="text-4xl font-extrabold text-blue-500">
-            Создано лучшими
+            Результаты клиентов
           </h2>
         </div>
 
