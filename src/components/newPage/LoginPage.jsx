@@ -38,7 +38,7 @@ const LoginPage = () => {
     setError("");
 
     // API запрос для входа
-    fetch("http://165.227.137.248/api/login/", {
+    fetch("http://161.35.83.156/api/login/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +68,7 @@ const LoginPage = () => {
     setError("");
 
     // API запрос для сброса пароля
-    fetch("http://165.227.137.248/password_reset/", {
+    fetch("http://161.35.83.156/password_reset/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
