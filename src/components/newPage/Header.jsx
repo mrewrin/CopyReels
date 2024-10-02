@@ -115,7 +115,7 @@ const Header = () => {
           </Button>
 
           {/* Прокрутка к блогу */}
-          <Button
+          {/* <Button
             onClick={() => handleScrollToSection("blog")}
             sx={{
               borderRadius: "50px",
@@ -128,7 +128,7 @@ const Header = () => {
             }}
           >
             Блог
-          </Button>
+          </Button> */}
 
           {/* Прокрутка к контактам */}
           <Link to="footer" spy={true} smooth={true} duration={500}>
@@ -228,9 +228,9 @@ const Header = () => {
             <Divider />
 
             {/* Переходы на другие страницы */}
-            <ListItem button component={RouterLink} to="/blog">
+            {/* <ListItem button component={RouterLink} to="/blog">
               <ListItemText primary="Блог" />
-            </ListItem>
+            </ListItem> */}
             <Divider />
             <ListItem button component={RouterLink} to="/login">
               <ListItemText primary="Войти" />
