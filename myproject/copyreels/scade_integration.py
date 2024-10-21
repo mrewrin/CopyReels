@@ -3,6 +3,7 @@ import json
 import requests
 import logging
 import time
+import subprocess
 from datetime import datetime
 from celery import shared_task
 from apify_client import ApifyClient
@@ -52,6 +53,40 @@ def download_social_media_video(url):
         return None
 
 
+# Функция для извлечения аудио из видео
+def extract_audio_from_video(video_url, output_path='audio_file.mp3'):
+    # Скачивание видео
+    video_file = 'downloaded_video.mp4'
+    logging.info(f"Скачивание видео с {video_url}")
+    subprocess.run(['wget', '-O', video_file, video_url], check=True)
+
+    # Извлечение аудио с помощью ffmpeg
+    audio_output = output_path
+    logging.info(f"Извлечение аудио из видео в файл {audio_output}")
+    subprocess.run(['ffmpeg', '-i', video_file, '-q:a', '0', '-map', 'a', audio_output], check=True)
+
+    return audio_output
+
+
+# Функция для загрузки аудиофайла на file.io
+def upload_to_file_io(file_path):
+    try:
+        logging.info(f"Начало загрузки файла {file_path} на file.io")
+        with open(file_path, 'rb') as f:
+            files = {'file': f}
+            response = requests.post('https://file.io/', files=files)
+            if response.status_code == 200:
+                response_data = response.json()
+                if response_data.get('success'):
+                    logging.info(f"Файл успешно загружен на file.io: {response_data.get('link')}")
+                    return response_data.get('link')
+                else:
+                    logging.error(f"Ошибка при загрузке на file.io: {response_data.get('message')}")
+            else:
+                logging.error(f"Ошибка при загрузке на file.io: {response.status_code} {response.text}")
+    except Exception as e:
+        logging.error(f"Ошибка при загрузке на file.io: {e}")
+    return None
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
@@ -135,29 +170,43 @@ def process_video_task(url, user_info):
     if video_file_url:
         logging.info(f"Видео скачано и сохранено: {video_file_url}")
 
-        # Этап 2: Запуск потока Scade для обработки аудио (используем URL на видео)
-        task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, video_file_url)
-        if task_id:
-            logging.info(f"Задача Scade успешно запущена, ID: {task_id}")
+        # Этап 2: Извлечение аудио из видео
+        audio_file_path = extract_audio_from_video(video_file_url)
+        if audio_file_path:
+            logging.info(f"Аудио успешно извлечено: {audio_file_path}")
 
-            # Этап 3: Ожидание завершения задачи Scade и получение результатов
-            scade_result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
-            if scade_result:
-                logging.info(f"Результаты Scade получены: {scade_result}")
+            # Этап 3: Загрузка аудио на file.io
+            file_io_link = upload_to_file_io(audio_file_path)
+            if file_io_link:
+                logging.info(f"Аудио загружено на file.io: {file_io_link}")
 
-                # Этап 4: Сохранение результата в базу данных
-                video_result = VideoProcessResult.objects.create(
-                    url=url,
-                    user_info=user_info,
-                    transcribation=scade_result.get('Transcribation', ''),
-                    rewriting=scade_result.get('Rewriting', '')
-                )
-                logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
-                return video_result
+                # Этап 4: Запуск потока Scade для обработки аудио
+                task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, file_io_link)
+                if task_id:
+                    logging.info(f"Задача Scade успешно запущена, ID: {task_id}")
+
+                    # Этап 5: Ожидание завершения задачи Scade и получение результатов
+                    scade_result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
+                    if scade_result:
+                        logging.info(f"Результаты Scade получены: {scade_result}")
+
+                        # Этап 6: Сохранение результата в базу данных
+                        video_result = VideoProcessResult.objects.create(
+                            url=url,
+                            user_info=user_info,
+                            transcribation=scade_result.get('Transcribation', ''),
+                            rewriting=scade_result.get('Rewriting', '')
+                        )
+                        logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
+                        return video_result
+                    else:
+                        logging.error("Не удалось получить результаты Scade")
+                else:
+                    logging.error("Ошибка при запуске задачи Scade")
             else:
-                logging.error("Не удалось получить результаты Scade")
+                logging.error("Ошибка при загрузке аудио на file.io")
         else:
-            logging.error("Ошибка при запуске задачи Scade")
+            logging.error("Ошибка при извлечении аудио из видео")
     else:
         logging.error("Ошибка при скачивании видео через Apify")
     return None
