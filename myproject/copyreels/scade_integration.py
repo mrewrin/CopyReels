@@ -34,18 +34,23 @@ def download_social_media_video(url):
         logging.info(f"Задача выполнена, результат доступен в dataset ID: {run['defaultDatasetId']}")
 
         # Получение результатов
-        dataset_items = client.dataset(run["defaultDatasetId"]).list_items()
-        video_url = dataset_items["items"][0].get("download_url")
+        dataset_items = client.dataset(run["defaultDatasetId"]).list_items().items
 
-        if video_url:
-            logging.info(f"Ссылка на скачивание видео: {video_url}")
+        # Поиск видео среднего качества
+        formats = dataset_items[0].get("formats", [])
+        medium_quality = next((f for f in formats if f["resolution"] == "720x1280"), None)
+
+        if medium_quality:
+            video_url = medium_quality.get("url")
+            logging.info(f"Ссылка на скачивание видео среднего качества: {video_url}")
             return video_url
         else:
-            logging.error("Не удалось получить ссылку на видео.")
+            logging.error("Не удалось найти видео с разрешением 720x1280.")
             return None
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
+
 
 
 # Запуск потока Scade
