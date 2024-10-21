@@ -24,14 +24,13 @@ def download_social_media_video(url):
     logging.info(f"Запуск загрузки видео с {url} через Apify All Social Media Video Downloader")
 
     # Подготовка входных данных для актора
-    input_data = {
-        "startUrls": [{"url": url}],
-        "proxy": {"useApifyProxy": True}  # Используем прокси от Apify
+    run_input = {
+        "url": url
     }
 
     try:
         # Запуск актора и ожидание завершения
-        run = client.actor('wilcode/all-social-media-video-downloader').call(input=input_data)
+        run = client.actor('wilcode/all-social-media-video-downloader').call(run_input=run_input)
         logging.info(f"Задача выполнена, результат доступен в dataset ID: {run['defaultDatasetId']}")
 
         # Получение результатов
