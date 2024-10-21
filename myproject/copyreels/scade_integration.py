@@ -31,7 +31,7 @@ def download_social_media_video(url):
 
     try:
         # Запуск актора и ожидание завершения
-        run = client.actor('wilcode/all-social-media-video-downloader').call(input_data=input_data)
+        run = client.actor('wilcode/all-social-media-video-downloader').call(input=input_data)
         logging.info(f"Задача выполнена, результат доступен в dataset ID: {run['defaultDatasetId']}")
 
         # Получение результатов
