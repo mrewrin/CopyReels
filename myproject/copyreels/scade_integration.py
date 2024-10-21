@@ -63,7 +63,7 @@ def extract_audio_from_video(video_url, output_path='audio_file.mp3'):
     # Извлечение аудио с помощью ffmpeg
     audio_output = output_path
     logging.info(f"Извлечение аудио из видео в файл {audio_output}")
-    subprocess.run(['ffmpeg', '-i', video_file, '-q:a', '0', '-map', 'a', audio_output], check=True)
+    subprocess.run(['ffmpeg', '-i', video_file, '-q:a', '0', '-map', '0:a?', audio_output], check=True)
 
     return audio_output
 
@@ -87,6 +87,7 @@ def upload_to_file_io(file_path):
     except Exception as e:
         logging.error(f"Ошибка при загрузке на file.io: {e}")
     return None
+
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
