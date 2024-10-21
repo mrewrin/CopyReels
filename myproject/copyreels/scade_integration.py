@@ -1,4 +1,3 @@
-import yt_dlp
 import os
 import json
 import requests
@@ -6,6 +5,7 @@ import logging
 import time
 from datetime import datetime
 from celery import shared_task
+from apify_client import ApifyClient
 from .models import VideoProcessResult  # Importing the model for saving results
 
 # Настройка логирования
@@ -15,84 +15,39 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 SCADE_FLOW = 37048
 SCADE_ACCESS_TOKEN = "NWJhNjYxZjktNDIwNS00YWYwLThmYzctYjMzMGE1ODY4YTk5Om9SblZPOWJtNU83RHhWSDZqUDFlaE8wZlV5eW05ZA=="
 
-
-def upload_to_file_io(file_path):
-    try:
-        logging.info(f"Начало загрузки файла {file_path} на file.io")
-        with open(file_path, 'rb') as f:
-            files = {'file': f}
-            response = requests.post('https://file.io/', files=files)
-            if response.status_code == 200:
-                response_data = response.json()
-                if response_data.get('success'):
-                    logging.info(f"Файл успешно загружен на file.io: {response_data.get('link')}")
-                    return response_data.get('link')
-                else:
-                    logging.error(f"Ошибка при загрузке на file.io: {response_data.get('message')}")
-            else:
-                logging.error(f"Ошибка при загрузке на file.io: {response.status_code} {response.text}")
-    except Exception as e:
-        logging.error(f"Ошибка при загрузке на file.io: {e}")
-    return None
+# Настройка клиента Apify
+APIFY_API_TOKEN = 'apify_api_QZszNnqD2DoI1Ueh2ac2TQieMQfOLe3taq2B'
+client = ApifyClient(APIFY_API_TOKEN)
 
 
-# Пути к файлам cookies для YouTube и Instagram
-COOKIES_FILES = {
-    'youtube': '/var/www/CopyReels/myproject/copyreels/www.youtube.com_cookies.txt',
-    'instagram': '/var/www/CopyReels/myproject/copyreels/www.instagram.com_cookies.txt'
-}
+def download_social_media_video(url):
+    logging.info(f"Запуск загрузки видео с {url} через Apify All Social Media Video Downloader")
 
-USER_AGENTS = {
-    'chrome': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-}
-
-# Функция для загрузки аудио с YouTube
-def download_audio(url, output_folder='audio_files', throttled_rate='50K'):
-    logging.info(f"Начало загрузки и извлечения аудио из {url}")
-
-    # Проверка или создание директории для сохранения файлов
-    if not os.path.exists(output_folder):
-        try:
-            os.makedirs(output_folder)
-        except OSError as e:
-            logging.error(f"Ошибка при создании директории {output_folder}: {e}")
-            return None
-
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    output_file = os.path.join(output_folder, f'audio_{timestamp}.mp3')
-
-    # Определение настроек для yt-dlp
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'outtmpl': output_file + '.%(ext)s',
-        'keepvideo': False,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'noplaylist': True,
-        'nocheckcertificate': True,
-        'cookies': COOKIES_FILES.get('youtube'),  # Using cookies for authentication
-        'user-agent': USER_AGENTS.get('chrome'),
-        'proxy': 'socks5://149.255.61.9:61103',  # Replace with the selected proxy
-        'throttled-rate': throttled_rate  # Throttling download speed
+    # Подготовка входных данных для актора
+    input_data = {
+        "startUrls": [{"url": url}],
+        "proxy": {"useApifyProxy": True}  # Используем прокси от Apify
     }
 
     try:
-        logging.info(f"Загрузка аудио с URL: {url}")
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+        # Запуск актора и ожидание завершения
+        run = client.actor('wilcode/all-social-media-video-downloader').call(input_data=input_data)
+        logging.info(f"Задача выполнена, результат доступен в dataset ID: {run['defaultDatasetId']}")
 
-        if os.path.exists(output_file):
-            logging.info(f'Аудио успешно сохранено как {output_file}')
-            return output_file
+        # Получение результатов
+        dataset_items = client.dataset(run["defaultDatasetId"]).list_items()
+        video_url = dataset_items["items"][0].get("download_url")
+
+        if video_url:
+            logging.info(f"Ссылка на скачивание видео: {video_url}")
+            return video_url
         else:
-            logging.error(f'Не удалось сохранить аудио файл: {output_file}')
+            logging.error("Не удалось получить ссылку на видео.")
             return None
     except Exception as e:
-        logging.error(f'Ошибка при загрузке и извлечении аудио: {e}')
+        logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
+
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
@@ -171,41 +126,34 @@ def get_scade_result(task_id, scade_access_token, max_attempts=25, timeout=300):
 def process_video_task(url, user_info):
     logging.info(f"Запущена задача для обработки видео URL: {url}, пользователя: {user_info}")
 
-    # Этап 1: Загрузка аудио
-    audio_file_path = download_audio(url)
-    if audio_file_path:
-        logging.info(f"Аудио скачано и сохранено: {audio_file_path}")
+    # Этап 1: Загрузка видео через Apify
+    video_file_url = download_social_media_video(url)
+    if video_file_url:
+        logging.info(f"Видео скачано и сохранено: {video_file_url}")
 
-        # Этап 2: Загрузка аудио на file.io для передачи в Scade
-        file_io_link = upload_to_file_io(audio_file_path)
-        if file_io_link:
-            logging.info(f"Файл загружен на file.io: {file_io_link}")
+        # Этап 2: Запуск потока Scade для обработки аудио (используем URL на видео)
+        task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, video_file_url)
+        if task_id:
+            logging.info(f"Задача Scade успешно запущена, ID: {task_id}")
 
-            # Этап 3: Запуск потока Scade для обработки аудио
-            task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, file_io_link)
-            if task_id:
-                logging.info(f"Задача Scade успешно запущена, ID: {task_id}")
+            # Этап 3: Ожидание завершения задачи Scade и получение результатов
+            scade_result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
+            if scade_result:
+                logging.info(f"Результаты Scade получены: {scade_result}")
 
-                # Этап 4: Ожидание завершения задачи Scade и получение результатов
-                scade_result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
-                if scade_result:
-                    logging.info(f"Результаты Scade получены: {scade_result}")
-
-                    # Этап 5: Сохранение результата в базу данных
-                    video_result = VideoProcessResult.objects.create(
-                        url=url,
-                        user_info=user_info,
-                        transcribation=scade_result.get('Transcribation', ''),
-                        rewriting=scade_result.get('Rewriting', '')
-                    )
-                    logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
-                    return video_result
-                else:
-                    logging.error("Не удалось получить результаты Scade")
+                # Этап 4: Сохранение результата в базу данных
+                video_result = VideoProcessResult.objects.create(
+                    url=url,
+                    user_info=user_info,
+                    transcribation=scade_result.get('Transcribation', ''),
+                    rewriting=scade_result.get('Rewriting', '')
+                )
+                logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
+                return video_result
             else:
-                logging.error("Ошибка при запуске задачи Scade")
+                logging.error("Не удалось получить результаты Scade")
         else:
-            logging.error("Ошибка при загрузке файла на file.io")
+            logging.error("Ошибка при запуске задачи Scade")
     else:
-        logging.error("Ошибка при скачивании аудио")
+        logging.error("Ошибка при скачивании видео через Apify")
     return None
