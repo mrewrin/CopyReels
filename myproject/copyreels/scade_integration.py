@@ -204,7 +204,17 @@ def process_video_task(url, user_info):
                     rewriting=scade_result.get('Rewriting', '')
                 )
                 logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
-                return video_result
+
+                # Преобразование результата в словарь перед возвратом
+                result_dict = {
+                    "id": video_result.id,
+                    "url": video_result.url,
+                    "user_info": video_result.user_info,
+                    "transcribation": video_result.transcribation,
+                    "rewriting": video_result.rewriting,
+                }
+
+                return result_dict  # Возвращаем сериализуемый словарь
             else:
                 logging.error("Не удалось получить результаты Scade")
         else:
