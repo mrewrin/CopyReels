@@ -44,7 +44,7 @@ def download_social_media_audio(url):
         # Получение датасета, связанного с выполнением задачи актора
         dataset_client = client.dataset(run['defaultDatasetId'])
         dataset = dataset_client.list_items(limit=1, desc=True)  # Получаем самый последний элемент
-        print(dataset)
+        logging.info(f'{dataset}')
         # Извлечение ссылки для скачивания аудиофайла
         download_url = dataset.items[0].get('download_link')
 
