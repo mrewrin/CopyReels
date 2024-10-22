@@ -32,7 +32,6 @@ def download_social_media_audio(url):
         "proxy": {
             "useApifyProxy": True,  # Включить использование Apify Proxy
             "apifyProxyGroups": ["RESIDENTIAL"],  # Указать группу прокси (например, residential)
-            "apifyProxyCountry": "Anywhere"  # Установить код страны для прокси (например, HR для Хорватии)
         },
         "url": url # Ссылка на видео в Instagram для загрузки
     }
