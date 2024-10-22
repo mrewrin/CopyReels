@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import mimetypes
 import logging
 import time
 import subprocess
@@ -25,62 +26,30 @@ def download_social_media_audio(url):
     logging.info(f"Запуск загрузки аудио с {url} через нового актора")
 
     # Подготовка входных данных для актора
-    run_input = {
-        "videoUrl": url
+    actor_input = {
+        "audioOnly": True,  # Установите True, если нужно скачать только аудио, False для полного видео
+        "ffmpeg": True,  # Использовать ли ffmpeg для обработки
+        "proxy": {
+            "useApifyProxy": True,  # Включить использование Apify Proxy
+            "apifyProxyGroups": ["RESIDENTIAL"],  # Указать группу прокси (например, residential)
+            "apifyProxyCountry": "Anywhere"  # Установить код страны для прокси (например, HR для Хорватии)
+        },
+        "url": url # Ссылка на видео в Instagram для загрузки
     }
 
     try:
         # Запуск актора и ожидание завершения
-        run = client.actor('JXsyluUMPERGlag4K').call(input=run_input)
+        run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
         logging.info(f"Задача выполнена, получена ссылка для скачивания аудио")
-
-        # Получение ссылки на аудиофайл
-        audio_url = run.get("download_link")
-        if audio_url:
-            logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
-            return audio_url
-        else:
-            logging.error("Не удалось получить ссылку на аудио.")
-            return None
+        # Получение датасета, связанного с Instagram-загрузчиком
+        my_dataset_client = client.dataset('sm@staffai.ru/Instagram-Downloader')
+        # Получение последней записи датасета, которая содержит ссылку для скачивания
+        dataset = my_dataset_client.list_items(limit=1, desc=True)  # Получить последний элемент
+        url = dataset.items[0]['download_link']  # Извлечение ссылки для скачивания из датасета
+        return url
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
-
-
-# # Функция для извлечения аудио из видео
-# def extract_audio_from_video(video_url, output_path='audio_file.mp3'):
-#     # Скачивание видео
-#     video_file = 'downloaded_video.mp4'
-#     logging.info(f"Скачивание видео с {video_url}")
-#     subprocess.run(['wget', '-O', video_file, video_url], check=True)
-#
-#     # Извлечение аудио с помощью ffmpeg
-#     audio_output = output_path
-#     logging.info(f"Извлечение аудио из видео в файл {audio_output}")
-#     subprocess.run(['ffmpeg', '-i', video_file, '-q:a', '0', '-map', '0:a?', audio_output], check=True)
-#
-#     return audio_output
-#
-#
-# # Функция для загрузки аудиофайла на file.io
-# def upload_to_file_io(file_path):
-#     try:
-#         logging.info(f"Начало загрузки файла {file_path} на file.io")
-#         with open(file_path, 'rb') as f:
-#             files = {'file': f}
-#             response = requests.post('https://file.io/', files=files)
-#             if response.status_code == 200:
-#                 response_data = response.json()
-#                 if response_data.get('success'):
-#                     logging.info(f"Файл успешно загружен на file.io: {response_data.get('link')}")
-#                     return response_data.get('link')
-#                 else:
-#                     logging.error(f"Ошибка при загрузке на file.io: {response_data.get('message')}")
-#             else:
-#                 logging.error(f"Ошибка при загрузке на file.io: {response.status_code} {response.text}")
-#     except Exception as e:
-#         logging.error(f"Ошибка при загрузке на file.io: {e}")
-#     return None
 
 
 # Запуск потока Scade
