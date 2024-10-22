@@ -205,13 +205,11 @@ def process_video_task(url, user_info):
                 )
                 logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
 
-                # Преобразование результата в словарь перед возвратом
+                # Возвращаем результат на фронтенд напрямую из scade_result
                 result_dict = {
-                    "id": video_result.id,
-                    "url": video_result.url,
-                    "user_info": video_result.user_info,
-                    "transcribation": video_result.transcribation,
-                    "rewriting": video_result.rewriting,
+                    "Transcribation": scade_result.get('Transcribation', ''),
+                    "Rewriting": scade_result.get('Rewriting', ''),
+                    "status": "completed"
                 }
 
                 return result_dict  # Возвращаем сериализуемый словарь
