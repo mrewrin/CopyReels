@@ -39,13 +39,16 @@ def download_social_media_audio(url):
     try:
         # Запуск актора и ожидание завершения
         run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
-        logging.info(f"Задача выполнена, получена ссылка для скачивания аудио")
-        # Получение датасета, связанного с Instagram-загрузчиком
-        my_dataset_client = client.dataset('sm@staffai.ru/Instagram-Downloader')
-        # Получение последней записи датасета, которая содержит ссылку для скачивания
-        dataset = my_dataset_client.list_items(limit=1, desc=True)  # Получить последний элемент
-        url = dataset.items[0]['download_link']  # Извлечение ссылки для скачивания из датасета
-        return url
+        logging.info(f"Задача выполнена, ответ актора: {run}")
+
+        # Получение ссылки на скачивание аудио из ответа
+        audio_url = run.get('download_link')
+        if audio_url:
+            logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
+            return audio_url
+        else:
+            logging.error(f"Не удалось получить ссылку на аудио, ответ актора: {run}")
+            return None
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
