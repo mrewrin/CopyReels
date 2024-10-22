@@ -27,34 +27,43 @@ def download_social_media_audio(url):
 
     # Подготовка входных данных для актора
     actor_input = {
-        "audioOnly": True,  # True - только аудио, False - видео
-        "ffmpeg": True,  # Использовать ли ffmpeg для обработки
+        "audioOnly": True,
+        "ffmpeg": True,
         "proxy": {
-            "useApifyProxy": True,  # Включить использование Apify Proxy
-            "apifyProxyGroups": ["RESIDENTIAL"],  # Группа прокси
+            "useApifyProxy": True,
+            "apifyProxyGroups": ["RESIDENTIAL"]
         },
-        "url": url  # Ссылка на видео для загрузки
+        "url": url
     }
 
     try:
-        # Запуск актора и ожидание его завершения
+        # Запуск актора и ожидание завершения
         run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
-        logging.info(f"Актор завершил работу, ID датасета: {run['defaultDatasetId']}")
+        logging.info(f"Задача выполнена, получен ответ актора: {run}")
 
-        # Получение датасета, связанного с выполнением задачи актора
-        dataset_client = client.dataset(run['defaultDatasetId'])
-        dataset = dataset_client.list_items(limit=1, desc=True)  # Получаем самый последний элемент
-        logging.info(f'{dataset}')
-        # Извлечение ссылки для скачивания аудиофайла
-        download_url = dataset.items[0].get('download_link')
+        # Получение ID датасета
+        dataset_id = run.get("defaultDatasetId")
+        logging.info(f"ID датасета: {dataset_id}")
 
-        if download_url:
-            logging.info(f"Ссылка на скачивание: {download_url}")
-            return download_url
+        if dataset_id:
+            dataset_client = client.dataset(dataset_id)
+            dataset = dataset_client.list_items(limit=1, desc=True)
+
+            # Логируем содержимое датасета
+            logging.info(f"Элементы датасета: {dataset.items}")
+
+            if len(dataset.items) > 0:
+                audio_url = dataset.items[0].get('download_link')
+                if audio_url:
+                    logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
+                    return audio_url
+                else:
+                    logging.error("Не удалось извлечь ссылку на скачивание аудиофайла.")
+            else:
+                logging.error("Датасет пуст, нет элементов для извлечения.")
         else:
-            logging.error("Не удалось извлечь ссылку на скачивание из датасета.")
-            return None
-
+            logging.error("Не удалось получить ID датасета.")
+        return None
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
