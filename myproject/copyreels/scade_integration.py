@@ -23,41 +23,45 @@ client = ApifyClient(APIFY_API_TOKEN)
 
 
 def download_social_media_audio(url):
-    logging.info(f"Запуск загрузки аудио с {url} через нового актора")
+    logging.info(f"Запуск загрузки аудио с {url} через актора")
 
     # Подготовка входных данных для актора
     actor_input = {
-        "audioOnly": True,  # Установите True, если нужно скачать только аудио, False для полного видео
-        "ffmpeg": True,  # Использовать ли ffmpeg для обработки
+        "audioOnly": True,
+        "ffmpeg": True,
         "proxy": {
-            "useApifyProxy": True,  # Включить использование Apify Proxy
-            "apifyProxyGroups": ["RESIDENTIAL"],  # Указать группу прокси (например, residential)
+            "useApifyProxy": True,
+            "apifyProxyGroups": ["RESIDENTIAL"],
         },
-        "url": url # Ссылка на видео в Instagram для загрузки
+        "url": url
     }
 
     try:
-        # Запуск актора и ожидание завершения
+        # Запуск актора
         run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
         logging.info(f"Задача выполнена, получен ответ актора")
-        dataset_id = run["defaultDatasetId"]
-        logging.info(f"Получен ID датасета: {dataset_id}")
-        my_dataset_client = client.dataset(dataset_id)
-        for item in my_dataset_client.iterate_items():
-            print(item)
-        dataset = my_dataset_client.list_items(limit=1, desc=True)
-        logging.info(f"Получен датасет: {dataset}")
-        audio_url = dataset.items[0]['download_link']
 
-        if audio_url:
-            logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
-            return audio_url
+        # Получение ссылки на аудио из Key-Value хранилища
+        key_value_store_id = run["defaultKeyValueStoreId"]
+        logging.info(f"ID хранилища: {key_value_store_id}")
+
+        key_value_store_client = client.key_value_store(key_value_store_id)
+        audio_data = key_value_store_client.get_record('OUTPUT')
+
+        if audio_data:
+            download_url = audio_data.get('download_link')
+            if download_url:
+                logging.info(f"Ссылка на аудиофайл: {download_url}")
+                return download_url
+            else:
+                logging.error("Ссылка на скачивание не найдена в результатах.")
         else:
-            logging.error(f"Не удалось получить ссылку на аудио, ответ актора: {run}")
-            return None
+            logging.error("Не удалось получить данные из Key-Value Store.")
+
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
-        return None
+
+    return None
 
 
 # Запуск потока Scade
