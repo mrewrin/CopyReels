@@ -24,7 +24,7 @@ client = ApifyClient(APIFY_API_TOKEN)
 
 def generate_download_link(key_value_store_id, key):
     """Генерация ссылки на скачивание файла из Key-Value Store."""
-    base_url = f"https://api.apify.com/v2/key-value-stores/{key_value_store_id}/records/{key}?attachment=true"
+    base_url = f"https://api.apify.com/v2/key-value-stores/{key_value_store_id}/records/{key}?attachment=true%27"
     return base_url
 
 
