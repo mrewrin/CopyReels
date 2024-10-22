@@ -27,41 +27,37 @@ def download_social_media_audio(url):
 
     # Подготовка входных данных для актора
     actor_input = {
-        "audioOnly": True,
-        "ffmpeg": True,
+        "audioOnly": True,  # True - только аудио, False - видео
+        "ffmpeg": True,  # Использовать ли ffmpeg для обработки
         "proxy": {
-            "useApifyProxy": True,
-            "apifyProxyGroups": ["RESIDENTIAL"],
+            "useApifyProxy": True,  # Включить использование Apify Proxy
+            "apifyProxyGroups": ["RESIDENTIAL"],  # Группа прокси
         },
-        "url": url
+        "url": url  # Ссылка на видео для загрузки
     }
 
     try:
-        # Запуск актора
+        # Запуск актора и ожидание его завершения
         run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
-        logging.info(f"Задача выполнена, получен ответ актора")
+        logging.info(f"Актор завершил работу, ID датасета: {run['defaultDatasetId']}")
 
-        # Получение ссылки на аудио из Key-Value хранилища
-        key_value_store_id = run["defaultKeyValueStoreId"]
-        logging.info(f"ID хранилища: {key_value_store_id}")
+        # Получение датасета, связанного с выполнением задачи актора
+        dataset_client = client.dataset(run['defaultDatasetId'])
+        dataset = dataset_client.list_items(limit=1, desc=True)  # Получаем самый последний элемент
+        print(dataset)
+        # Извлечение ссылки для скачивания аудиофайла
+        download_url = dataset.items[0].get('download_link')
 
-        key_value_store_client = client.key_value_store(key_value_store_id)
-        audio_data = key_value_store_client.get_record('OUTPUT')
-
-        if audio_data:
-            download_url = audio_data.get('download_link')
-            if download_url:
-                logging.info(f"Ссылка на аудиофайл: {download_url}")
-                return download_url
-            else:
-                logging.error("Ссылка на скачивание не найдена в результатах.")
+        if download_url:
+            logging.info(f"Ссылка на скачивание: {download_url}")
+            return download_url
         else:
-            logging.error("Не удалось получить данные из Key-Value Store.")
+            logging.error("Не удалось извлечь ссылку на скачивание из датасета.")
+            return None
 
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
-
-    return None
+        return None
 
 
 # Запуск потока Scade
