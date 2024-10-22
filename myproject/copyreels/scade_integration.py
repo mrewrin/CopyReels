@@ -21,72 +21,66 @@ APIFY_API_TOKEN = 'apify_api_QZszNnqD2DoI1Ueh2ac2TQieMQfOLe3taq2B'
 client = ApifyClient(APIFY_API_TOKEN)
 
 
-def download_social_media_video(url):
-    logging.info(f"Запуск загрузки видео с {url} через Apify All Social Media Video Downloader")
+def download_social_media_audio(url):
+    logging.info(f"Запуск загрузки аудио с {url} через нового актора")
 
     # Подготовка входных данных для актора
     run_input = {
-        "url": url
+        "videoUrl": url
     }
 
     try:
         # Запуск актора и ожидание завершения
-        run = client.actor('wilcode/all-social-media-video-downloader').call(run_input=run_input)
-        logging.info(f"Задача выполнена, результат доступен в dataset ID: {run['defaultDatasetId']}")
+        run = client.actor('JXsyluUMPERGlag4K').call(input=run_input)
+        logging.info(f"Задача выполнена, получена ссылка для скачивания аудио")
 
-        # Получение результатов
-        dataset_items = client.dataset(run["defaultDatasetId"]).list_items().items
-
-        # Поиск видео среднего качества
-        formats = dataset_items[0].get("formats", [])
-        medium_quality = next((f for f in formats if f["resolution"] == "720x1280"), None)
-
-        if medium_quality:
-            video_url = medium_quality.get("url")
-            logging.info(f"Ссылка на скачивание видео среднего качества: {video_url}")
-            return video_url
+        # Получение ссылки на аудиофайл
+        audio_url = run.get("download_link")
+        if audio_url:
+            logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
+            return audio_url
         else:
-            logging.error("Не удалось найти видео с разрешением 720x1280.")
+            logging.error("Не удалось получить ссылку на аудио.")
             return None
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
 
 
-# Функция для извлечения аудио из видео
-def extract_audio_from_video(video_url, output_path='audio_file.mp3'):
-    # Скачивание видео
-    video_file = 'downloaded_video.mp4'
-    logging.info(f"Скачивание видео с {video_url}")
-    subprocess.run(['wget', '-O', video_file, video_url], check=True)
-
-    # Извлечение аудио с помощью ffmpeg
-    audio_output = output_path
-    logging.info(f"Извлечение аудио из видео в файл {audio_output}")
-    subprocess.run(['ffmpeg', '-i', video_file, '-q:a', '0', '-map', '0:a?', audio_output], check=True)
-
-    return audio_output
-
-
-# Функция для загрузки аудиофайла на file.io
-def upload_to_file_io(file_path):
-    try:
-        logging.info(f"Начало загрузки файла {file_path} на file.io")
-        with open(file_path, 'rb') as f:
-            files = {'file': f}
-            response = requests.post('https://file.io/', files=files)
-            if response.status_code == 200:
-                response_data = response.json()
-                if response_data.get('success'):
-                    logging.info(f"Файл успешно загружен на file.io: {response_data.get('link')}")
-                    return response_data.get('link')
-                else:
-                    logging.error(f"Ошибка при загрузке на file.io: {response_data.get('message')}")
-            else:
-                logging.error(f"Ошибка при загрузке на file.io: {response.status_code} {response.text}")
-    except Exception as e:
-        logging.error(f"Ошибка при загрузке на file.io: {e}")
-    return None
+# # Функция для извлечения аудио из видео
+# def extract_audio_from_video(video_url, output_path='audio_file.mp3'):
+#     # Скачивание видео
+#     video_file = 'downloaded_video.mp4'
+#     logging.info(f"Скачивание видео с {video_url}")
+#     subprocess.run(['wget', '-O', video_file, video_url], check=True)
+#
+#     # Извлечение аудио с помощью ffmpeg
+#     audio_output = output_path
+#     logging.info(f"Извлечение аудио из видео в файл {audio_output}")
+#     subprocess.run(['ffmpeg', '-i', video_file, '-q:a', '0', '-map', '0:a?', audio_output], check=True)
+#
+#     return audio_output
+#
+#
+# # Функция для загрузки аудиофайла на file.io
+# def upload_to_file_io(file_path):
+#     try:
+#         logging.info(f"Начало загрузки файла {file_path} на file.io")
+#         with open(file_path, 'rb') as f:
+#             files = {'file': f}
+#             response = requests.post('https://file.io/', files=files)
+#             if response.status_code == 200:
+#                 response_data = response.json()
+#                 if response_data.get('success'):
+#                     logging.info(f"Файл успешно загружен на file.io: {response_data.get('link')}")
+#                     return response_data.get('link')
+#                 else:
+#                     logging.error(f"Ошибка при загрузке на file.io: {response_data.get('message')}")
+#             else:
+#                 logging.error(f"Ошибка при загрузке на file.io: {response.status_code} {response.text}")
+#     except Exception as e:
+#         logging.error(f"Ошибка при загрузке на file.io: {e}")
+#     return None
 
 
 # Запуск потока Scade
@@ -166,48 +160,34 @@ def get_scade_result(task_id, scade_access_token, max_attempts=25, timeout=300):
 def process_video_task(url, user_info):
     logging.info(f"Запущена задача для обработки видео URL: {url}, пользователя: {user_info}")
 
-    # Этап 1: Загрузка видео через Apify
-    video_file_url = download_social_media_video(url)
-    if video_file_url:
-        logging.info(f"Видео скачано и сохранено: {video_file_url}")
+    # Этап 1: Получение аудиофайла через нового актора Apify
+    audio_file_url = download_social_media_audio(url)
+    if audio_file_url:
+        logging.info(f"Ссылка на аудиофайл получена: {audio_file_url}")
 
-        # Этап 2: Извлечение аудио из видео
-        audio_file_path = extract_audio_from_video(video_file_url)
-        if audio_file_path:
-            logging.info(f"Аудио успешно извлечено: {audio_file_path}")
+        # Этап 2: Запуск потока Scade для обработки аудио
+        task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, audio_file_url)
+        if task_id:
+            logging.info(f"Задача Scade успешно запущена, ID: {task_id}")
 
-            # Этап 3: Загрузка аудио на file.io
-            file_io_link = upload_to_file_io(audio_file_path)
-            if file_io_link:
-                logging.info(f"Аудио загружено на file.io: {file_io_link}")
+            # Этап 3: Ожидание завершения задачи Scade и получение результатов
+            scade_result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
+            if scade_result:
+                logging.info(f"Результаты Scade получены: {scade_result}")
 
-                # Этап 4: Запуск потока Scade для обработки аудио
-                task_id = start_scade_flow(SCADE_FLOW, SCADE_ACCESS_TOKEN, file_io_link)
-                if task_id:
-                    logging.info(f"Задача Scade успешно запущена, ID: {task_id}")
-
-                    # Этап 5: Ожидание завершения задачи Scade и получение результатов
-                    scade_result = get_scade_result(task_id, SCADE_ACCESS_TOKEN)
-                    if scade_result:
-                        logging.info(f"Результаты Scade получены: {scade_result}")
-
-                        # Этап 6: Сохранение результата в базу данных
-                        video_result = VideoProcessResult.objects.create(
-                            url=url,
-                            user_info=user_info,
-                            transcribation=scade_result.get('Transcribation', ''),
-                            rewriting=scade_result.get('Rewriting', '')
-                        )
-                        logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
-                        return video_result
-                    else:
-                        logging.error("Не удалось получить результаты Scade")
-                else:
-                    logging.error("Ошибка при запуске задачи Scade")
+                # Этап 4: Сохранение результата в базу данных
+                video_result = VideoProcessResult.objects.create(
+                    url=url,
+                    user_info=user_info,
+                    transcribation=scade_result.get('Transcribation', ''),
+                    rewriting=scade_result.get('Rewriting', '')
+                )
+                logging.info(f"Результаты сохранены в базу данных, ID: {video_result.id}")
+                return video_result
             else:
-                logging.error("Ошибка при загрузке аудио на file.io")
+                logging.error("Не удалось получить результаты Scade")
         else:
-            logging.error("Ошибка при извлечении аудио из видео")
+            logging.error("Ошибка при запуске задачи Scade")
     else:
-        logging.error("Ошибка при скачивании видео через Apify")
+        logging.error("Не удалось получить аудиофайл через Apify")
     return None
