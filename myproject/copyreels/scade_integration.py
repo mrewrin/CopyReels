@@ -43,6 +43,8 @@ def download_social_media_audio(url):
         dataset_id = run["defaultDatasetId"]
         logging.info(f"Получен ID датасета: {dataset_id}")
         my_dataset_client = client.dataset(dataset_id)
+        for item in my_dataset_client.iterate_items():
+            print(item)
         dataset = my_dataset_client.list_items(limit=1, desc=True)
         logging.info(f"Получен датасет: {dataset}")
         audio_url = dataset.items[0]['download_link']
