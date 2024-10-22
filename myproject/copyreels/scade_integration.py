@@ -22,17 +22,27 @@ APIFY_API_TOKEN = 'apify_api_QZszNnqD2DoI1Ueh2ac2TQieMQfOLe3taq2B'
 client = ApifyClient(APIFY_API_TOKEN)
 
 
-def get_data_with_retries(client, key_value_store_id, key='OUTPUT', retries=5, delay=5):
+def get_data_with_retries(client, key_value_store_id, retries=5, delay=5):
     """Получение данных из Key-Value Store с несколькими попытками и задержкой."""
     key_value_client = client.key_value_store(key_value_store_id)
-    keys = key_value_client.list_keys()
-    logging.info(f"Ключи в хранилище: {keys}")
+
+    # Получаем все ключи в Key-Value Store
+    keys_response = key_value_client.list_keys()
+
+    if not keys_response or not keys_response.get('items'):
+        logging.error("Нет ключей в Key-Value Store.")
+        return None
+
+    logging.info(f"Ключи в хранилище: {keys_response['items']}")
+
+    # Например, пытаемся получить первый ключ из списка
+    first_key = keys_response['items'][0]['key']
+    logging.info(f"Попытка получить данные с ключом '{first_key}'")
 
     for attempt in range(retries):
         try:
-            # Попытка получить данные с указанным ключом
-            logging.info(f"Попытка {attempt + 1} получить данные с ключом '{key}'")
-            record = key_value_client.get_record(key)
+            logging.info(f"Попытка {attempt + 1} получить данные с ключом '{first_key}'")
+            record = key_value_client.get_record(first_key)
 
             # Если данные найдены, возвращаем их
             if record and record.get('value'):
@@ -77,7 +87,7 @@ def download_social_media_audio(url):
         logging.info(f"Получен ID Key-Value Store: {key_value_store_id}")
 
         # Добавляем логику ожидания и повторных попыток для получения данных
-        audio_url = get_data_with_retries(client, key_value_store_id, key='OUTPUT', retries=5, delay=5)
+        audio_url = get_data_with_retries(client, key_value_store_id, retries=5, delay=5)
 
         if audio_url:
             logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
