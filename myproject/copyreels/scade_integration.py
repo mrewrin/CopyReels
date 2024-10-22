@@ -22,8 +22,39 @@ APIFY_API_TOKEN = 'apify_api_QZszNnqD2DoI1Ueh2ac2TQieMQfOLe3taq2B'
 client = ApifyClient(APIFY_API_TOKEN)
 
 
+def get_data_with_retries(client, key_value_store_id, key='OUTPUT', retries=5, delay=5):
+    """Получение данных из Key-Value Store с несколькими попытками и задержкой."""
+    key_value_client = client.key_value_store(key_value_store_id)
+    keys = key_value_client.list_keys()
+    logging.info(f"Ключи в хранилище: {keys}")
+
+    for attempt in range(retries):
+        try:
+            # Попытка получить данные с указанным ключом
+            logging.info(f"Попытка {attempt + 1} получить данные с ключом '{key}'")
+            record = key_value_client.get_record(key)
+
+            # Если данные найдены, возвращаем их
+            if record and record.get('value'):
+                logging.info(f"Данные успешно получены: {record['value']}")
+                return record['value']
+            else:
+                logging.warning(f"Данные отсутствуют, попытка {attempt + 1} завершена.")
+
+        except Exception as e:
+            logging.error(f"Ошибка при получении данных: {e}")
+
+        # Ожидание перед следующей попыткой
+        if attempt < retries - 1:
+            logging.info(f"Ожидание {delay} секунд перед следующей попыткой...")
+            time.sleep(delay)
+
+    logging.error(f"Не удалось получить данные после {retries} попыток.")
+    return None
+
+
 def download_social_media_audio(url):
-    logging.info(f"Запуск загрузки аудио с {url} через актора")
+    logging.info(f"Запуск загрузки аудио с {url} через нового актора")
 
     # Подготовка входных данных для актора
     actor_input = {
@@ -37,46 +68,27 @@ def download_social_media_audio(url):
     }
 
     try:
-        # Шаг 1: Запуск актора
-        logging.info(f"Запуск актора с входными данными: {actor_input}")
+        # Запуск актора и ожидание завершения
         run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
         logging.info(f"Задача выполнена, получен ответ актора: {run}")
 
-        # Шаг 2: Получение ID Key-Value Store, где записаны результаты
-        key_value_store_id = run.get("defaultKeyValueStoreId")
+        # Получаем ID Key-Value Store и инициализируем клиент
+        key_value_store_id = run["defaultKeyValueStoreId"]
         logging.info(f"Получен ID Key-Value Store: {key_value_store_id}")
 
-        if not key_value_store_id:
-            logging.error("ID Key-Value Store не найден, возможно, задача завершена с ошибкой.")
-            return None
+        # Добавляем логику ожидания и повторных попыток для получения данных
+        audio_url = get_data_with_retries(client, key_value_store_id, key='OUTPUT', retries=5, delay=5)
 
-        # Шаг 3: Инициализация клиента Key-Value Store
-        logging.info(f"Инициализация клиента для Key-Value Store с ID: {key_value_store_id}")
-        key_value_client = client.key_value_store(key_value_store_id)
-
-        # Шаг 4: Попытка получения записи с ключом 'OUTPUT'
-        logging.info(f"Запрос записи с ключом 'OUTPUT' из Key-Value Store")
-        result = key_value_client.get_record('OUTPUT')
-
-        # Шаг 5: Проверка результата
-        if result:
-            logging.info(f"Получен ответ из Key-Value Store: {result}")
-        else:
-            logging.error(f"Ответ из Key-Value Store пустой или отсутствует.")
-            return None
-
-        # Шаг 6: Извлечение ссылки на скачивание аудио
-        if 'download_link' in result['value']:
-            audio_url = result['value']['download_link']
+        if audio_url:
             logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
             return audio_url
         else:
-            logging.error(f"Поле 'download_link' отсутствует в результате: {result}")
+            logging.error(f"Не удалось получить ссылку на аудиофайл после всех попыток.")
             return None
-
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
+
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
