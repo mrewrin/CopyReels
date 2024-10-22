@@ -39,10 +39,12 @@ def download_social_media_audio(url):
     try:
         # Запуск актора и ожидание завершения
         run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
-        logging.info(f"Задача выполнена, ответ актора: {run}")
+        logging.info(f"Задача выполнена, получен ответ актора")
         dataset_id = run["defaultDatasetId"]
+        logging.info(f"Получен ID датасета: {dataset_id}")
         my_dataset_client = client.dataset(dataset_id)
         dataset = my_dataset_client.list_items(limit=1, desc=True)
+        logging.info(f"Получен датасет: {dataset}")
         audio_url = dataset.items[0]['download_link']
 
         if audio_url:
