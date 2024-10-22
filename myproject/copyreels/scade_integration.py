@@ -22,8 +22,14 @@ APIFY_API_TOKEN = 'apify_api_QZszNnqD2DoI1Ueh2ac2TQieMQfOLe3taq2B'
 client = ApifyClient(APIFY_API_TOKEN)
 
 
-def get_data_with_retries(client, key_value_store_id, retries=5, delay=5):
-    """Получение данных из Key-Value Store с несколькими попытками и задержкой."""
+def generate_download_link(key_value_store_id, key):
+    """Генерация ссылки на скачивание файла из Key-Value Store."""
+    base_url = f"https://api.apify.com/v2/key-value-stores/{key_value_store_id}/records/{key}?attachment=true"
+    return base_url
+
+
+def get_data_and_generate_link(client, key_value_store_id, retries=5, delay=5):
+    """Получение данных и генерация ссылки на скачивание с несколькими попытками."""
     key_value_client = client.key_value_store(key_value_store_id)
     keys = key_value_client.list_keys()
     logging.info(f"Ключи в хранилище: {keys}")
@@ -41,10 +47,11 @@ def get_data_with_retries(client, key_value_store_id, retries=5, delay=5):
             logging.info(f"Попытка {attempt + 1} получить данные с ключом '{key}'")
             record = key_value_client.get_record(key)
 
-            # Если данные найдены, возвращаем их
-            if record and record.get('value'):
-                logging.info(f"Данные успешно получены: {record['value']}")
-                return record['value']
+            # Если данные найдены, возвращаем ссылку на скачивание
+            if record:
+                download_link = generate_download_link(key_value_store_id, key)
+                logging.info(f"Ссылка на скачивание успешно сгенерирована: {download_link}")
+                return download_link
             else:
                 logging.warning(f"Данные отсутствуют, попытка {attempt + 1} завершена.")
 
@@ -83,8 +90,8 @@ def download_social_media_audio(url):
         key_value_store_id = run["defaultKeyValueStoreId"]
         logging.info(f"Получен ID Key-Value Store: {key_value_store_id}")
 
-        # Добавляем логику ожидания и повторных попыток для получения данных
-        audio_url = get_data_with_retries(client, key_value_store_id, retries=5, delay=5)
+        # Генерация ссылки на скачивание аудио
+        audio_url = get_data_and_generate_link(client, key_value_store_id, retries=5, delay=5)
 
         if audio_url:
             logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
