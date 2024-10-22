@@ -27,47 +27,56 @@ def download_social_media_audio(url):
 
     # Подготовка входных данных для актора
     actor_input = {
-        "audioOnly": True,
-        "ffmpeg": True,
+        "audioOnly": True,  # Установите True, если нужно скачать только аудио, False для полного видео
+        "ffmpeg": True,  # Использовать ли ffmpeg для обработки
         "proxy": {
-            "useApifyProxy": True,
-            "apifyProxyGroups": ["RESIDENTIAL"]
+            "useApifyProxy": True,  # Включить использование Apify Proxy
+            "apifyProxyGroups": ["RESIDENTIAL"],  # Указать группу прокси (например, residential)
         },
-        "url": url
+        "url": url  # Ссылка на видео в Instagram для загрузки
     }
 
     try:
-        # Запуск актора и ожидание завершения
+        # Шаг 1: Запуск актора
+        logging.info(f"Запуск актора с входными данными: {actor_input}")
         run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
         logging.info(f"Задача выполнена, получен ответ актора: {run}")
 
-        # Получение ID датасета
-        dataset_id = run.get("defaultDatasetId")
-        logging.info(f"ID датасета: {dataset_id}")
+        # Шаг 2: Получение ID Key-Value Store, где записаны результаты
+        key_value_store_id = run.get("defaultKeyValueStoreId")
+        logging.info(f"Получен ID Key-Value Store: {key_value_store_id}")
 
-        if dataset_id:
-            dataset_client = client.dataset(dataset_id)
-            dataset = dataset_client.list_items(limit=1, desc=True)
+        if not key_value_store_id:
+            logging.error("ID Key-Value Store не найден, возможно, задача завершена с ошибкой.")
+            return None
 
-            # Логируем содержимое датасета
-            logging.info(f"Элементы датасета: {dataset.items}")
+        # Шаг 3: Инициализация клиента Key-Value Store
+        logging.info(f"Инициализация клиента для Key-Value Store с ID: {key_value_store_id}")
+        key_value_client = client.key_value_store(key_value_store_id)
 
-            if len(dataset.items) > 0:
-                audio_url = dataset.items[0].get('download_link')
-                if audio_url:
-                    logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
-                    return audio_url
-                else:
-                    logging.error("Не удалось извлечь ссылку на скачивание аудиофайла.")
-            else:
-                logging.error("Датасет пуст, нет элементов для извлечения.")
+        # Шаг 4: Попытка получения записи с ключом 'OUTPUT'
+        logging.info(f"Запрос записи с ключом 'OUTPUT' из Key-Value Store")
+        result = key_value_client.get_record('OUTPUT')
+
+        # Шаг 5: Проверка результата
+        if result:
+            logging.info(f"Получен ответ из Key-Value Store: {result}")
         else:
-            logging.error("Не удалось получить ID датасета.")
-        return None
+            logging.error(f"Ответ из Key-Value Store пустой или отсутствует.")
+            return None
+
+        # Шаг 6: Извлечение ссылки на скачивание аудио
+        if 'download_link' in result['value']:
+            audio_url = result['value']['download_link']
+            logging.info(f"Ссылка на скачивание аудиофайла: {audio_url}")
+            return audio_url
+        else:
+            logging.error(f"Поле 'download_link' отсутствует в результате: {result}")
+            return None
+
     except Exception as e:
         logging.error(f"Ошибка при выполнении задачи Apify: {e}")
         return None
-
 
 # Запуск потока Scade
 def start_scade_flow(flow_id, scade_access_token, audio_file_url):
