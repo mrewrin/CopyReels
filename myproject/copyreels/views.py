@@ -61,24 +61,31 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        User = get_user_model()
-        email = request.data.get('email')
-        password = request.data.get('password')
-
         try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            email = request.data.get('email')
+            password = request.data.get('password')
 
-        # Аутентификация
-        user = authenticate(username=user.username, password=password)  # Используем username для аутентификации
-        if user:
-            login(request, user)
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({"token": token.key})
-        else:
-            print(f"Authentication failed for user: {email}")
-            return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            if not email or not password:
+                return Response({"error": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            User = get_user_model()
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Аутентификация
+            user = authenticate(username=user.username, password=password)
+            if user:
+                login(request, user)
+                token, _ = Token.objects.get_or_create(user=user)
+                return Response({"token": token.key})
+            else:
+                return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print(f"Error: {e}")
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetConfirmView(APIView):
