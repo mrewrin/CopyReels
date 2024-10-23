@@ -64,20 +64,21 @@ class LoginView(APIView):
         User = get_user_model()
         email = request.data.get('email')
         password = request.data.get('password')
+
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Аутентификация
-        user = authenticate(username=email, password=password)
+        user = authenticate(username=user.username, password=password)  # Используем username для аутентификации
         if user:
             login(request, user)
             token, _ = Token.objects.get_or_create(user=user)
             return Response({"token": token.key})
         else:
-            print(f"Authentication failed for user: {email}")  # Добавить отладочную информацию
-        return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            print(f"Authentication failed for user: {email}")
+            return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetConfirmView(APIView):
