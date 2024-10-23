@@ -70,6 +70,23 @@ def get_data_and_generate_link(client, key_value_store_id, retries=5, delay=5):
 def download_social_media_audio(url):
     logging.info(f"Запуск загрузки аудио с {url} через нового актора")
 
+    # Определение идентификаторов акторов для каждой платформы
+    reels_actor = 'JXsyluUMPERGlag4K'
+    shorts_actor = 'doXeBS5xgaF9REnkO'
+    tiktok_actor = 'yqgy7BPNF7IFvkSOW'
+
+    # Определение правильного актора в зависимости от URL
+    if 'instagram' in url:
+        actor = reels_actor
+    elif 'youtube' in url:
+        actor = shorts_actor
+    elif 'tiktok' in url:
+        actor = tiktok_actor
+    else:
+        logging.error("Платформа не распознана, URL должен содержать 'instagram', 'youtube' или 'tiktok'.")
+        return None
+
+    logging.info(f"Выбран актер: {actor} для загрузки аудио с {url}")
     # Подготовка входных данных для актора
     actor_input = {
         "audioOnly": True,  # Установите True, если нужно скачать только аудио, False для полного видео
@@ -83,7 +100,7 @@ def download_social_media_audio(url):
 
     try:
         # Запуск актора и ожидание завершения
-        run = client.actor('JXsyluUMPERGlag4K').call(run_input=actor_input)
+        run = client.actor(actor).call(run_input=actor_input)
         logging.info(f"Задача выполнена, получен ответ актора: {run}")
 
         # Получаем ID Key-Value Store и инициализируем клиент
