@@ -70,7 +70,7 @@ class LoginView(APIView):
             return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Аутентификация
-        user = authenticate(username=user.username, password=password)
+        user = authenticate(username=email, password=password)
         if user:
             login(request, user)
             token, _ = Token.objects.get_or_create(user=user)
